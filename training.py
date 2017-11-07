@@ -13,7 +13,8 @@ import torch.nn.functional as F
 import pdb
 import torch
 import torch.nn.utils
-
+import os
+#os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
 base = "ibowimg"
 rn = "rn"
 
@@ -86,11 +87,15 @@ if __name__=="__main__":
         print("epoch %s, loss %s, accuracy %s" %(str(i),str(batch_loss/config.batch_size),str(train_acc)))
         if (i+1)%config.val_interval ==0:
             val_accs = []
-            for v,q,a,_,_ in val:
+            for v,q,a,item,q_len in val:
                 q = Variable(q.cuda(async=True),**val_params)
                 a = Variable(a.cuda(async=True),**val_params)
                 v = Variable(v.cuda(async=True),**val_params)
-                o = model(q=q,v=v)
+                if sys.argv[1]==rn:
+                    q_len = Variable(q_len.cuda(async=True), **val_params)
+                    o = model(q,v,q_len)
+                elif sys.argv[1]==base:
+                    o = model(q,v)
                 acc = utils.batch_accuracy(o.data,a.data).cpu()
                 val_accs.append(acc.view(-1))
             val_acc=torch.cat(val_accs,dim=0).mean()
