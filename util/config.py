@@ -13,8 +13,8 @@ dataset = 'mscoco'
 
 # preprocess config
 preprocess_batch_size = 64
-image_size = 448  # scale shorter end of image to this size and centre crop
-output_size = image_size // 32  # size of the feature maps after processing through a network
+image_size = 224 #224 for resnet 2048*7*7 filter adoption #448 for google paper  # scale shorter end of image to this size and centre crop
+output_size = 7  # size of the feature maps after processing through a network
 output_features = 2048 # number of feature maps thereof
 central_fraction = 0.875  # only take this much of the centre when scaling and centre cropping
 word_embed_dim = 500

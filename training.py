@@ -2,7 +2,6 @@ from model import baseline
 from model import relational_network_model
 from util import data
 from util import utils
-from util import config
 from tqdm import *
 import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
@@ -15,6 +14,13 @@ import torch.nn.utils
 import sys
 
 
+base = "ibowimg"
+rn = "rn"
+
+if sys.argv[1]==base:
+    import util.config_baseline as config
+elif sys.argv[1]==rn:
+    from util import config
 
 if __name__=="__main__":
     train = True
@@ -22,8 +28,7 @@ if __name__=="__main__":
     training,train_dict_size =  data.get_loader(train=True,full_batch = False)
     val,val_dict_size = data.get_loader(val=True,full_batch= False)
     
-    base = "ibowimg"
-    rn = "rn"
+    
     model = None
     optimizer = None
     q_len = None
