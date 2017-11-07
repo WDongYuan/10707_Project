@@ -22,18 +22,20 @@ if __name__=="__main__":
     training,train_dict_size =  data.get_loader(train=True,full_batch = False)
     val,val_dict_size = data.get_loader(val=True,full_batch= False)
     
+    base = "ibowimg"
+    rn = "rn"
     model = None
     optimizer = None
     q_len = None
 
     # switch model here
-    if sys.argv[1]=="rn":
+    if sys.argv[1] == base:
         model = baseline.BOWIMG(config.max_answers,train_dict_size,config.word_embed_dim,config.image_embed_dim)
         optimizer = optim.Adam([
                                 {'params':model.embed.parameters(),'lr': config.initial_embed_lr},
                                 {'params':model.fc.parameters()}
                                ],lr = config.initial_lr)
-    elif sys.argv[1]!="ibowimg":
+    elif sys.argv[1] == rn:
         model = relational_network_model.RelationalNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.output_size,config.output_size,config.max_answers)
         optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = config.initial_lr)
 
@@ -62,10 +64,10 @@ if __name__=="__main__":
             q = Variable(q.cuda(async=True),**var_params)
             a = Variable(a.cuda(async=True),**var_params)
             v = Variable(v.cuda(async=True),**var_params)
-            if sys.argv[1]=='rn':
+            if sys.argv[1]==rn:
                 q_len = Variable(q_len.cuda(async=True), **var_params)
                 o = model(q,v,q_len)
-            elif sys.argv[1]=="ibowimg":
+            elif sys.argv[1]==base:
                 o = model(q,v)
             optimizer.zero_grad()
             loss =(-o*(a/10)).sum(dim=1).mean() # F.nll_loss(o,a)
