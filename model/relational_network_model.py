@@ -10,6 +10,20 @@ class RelationalNetwork(nn.Module):
 	def __init__(self,voc_size,word_embedding_size,channel,map_w,map_h,answer_voc_size):
 		##Embedding
 		super(RelationalNetwork, self).__init__()
+		self.conv = nn.Sequential(
+			nn.Conv2d(3, 24, 3, stride=2, padding=1),
+			nn.ReLU(),
+			nn.BatchNorm2d(24),
+			nn.Conv2d(24, 24, 3, stride=2, padding=1),
+			nn.ReLU(),
+			nn.BatchNorm2d(24),
+			nn.Conv2d(24, 24, 3, stride=2, padding=1),
+			nn.ReLU(),
+			nn.BatchNorm2d(24),
+			nn.Conv2d(24, 24, 3, stride=2, padding=1),
+			nn.ReLU(),
+			nn.BatchNorm2d(24)
+		)
 		self.voc_size = voc_size
 		self.word_embedding_size = word_embedding_size
 		self.embed = nn.Embedding(self.voc_size, self.word_embedding_size,padding_idx=0)
@@ -49,10 +63,11 @@ class RelationalNetwork(nn.Module):
 		self.LogSoftmax = nn.LogSoftmax()
 
 
-	def forward(self,sent_batch,conv_map_batch,sents_lengths):
+	def forward(self,sent_batch,img_batch,sents_lengths):
 		batch_size , sentlength = sent_batch.size()
 		self.batch_size = batch_size
 		sent_emb = self.embed(sent_batch)
+		conv_map_batch = self.conv(img_batch)
 
 		##LSTM
 		pack_sent = torch.nn.utils.rnn.pack_padded_sequence(sent_emb, list(sents_lengths.data.type(torch.LongTensor)), batch_first=True)
