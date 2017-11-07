@@ -14,8 +14,10 @@ import pdb
 import torch
 import torch.nn.utils
 import os
-#os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
 import config
+import torch.nn as nn
+
 
 if __name__=="__main__":
     train = True
@@ -27,7 +29,7 @@ if __name__=="__main__":
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = config.initial_lr)
 
     best_perf = 0.0
-    model.cuda()
+    model = nn.parallel.DataParallel(model,[0,1]).cuda()
     var_params = {
         'requires_grad': False,
 	    'volatile': False
