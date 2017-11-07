@@ -27,13 +27,13 @@ if __name__=="__main__":
     q_len = None
 
     # switch model here
-    if sys.argv[1]!="rn":
+    if sys.argv[1]=="rn":
         model = baseline.BOWIMG(config.max_answers,train_dict_size,config.word_embed_dim,config.image_embed_dim)
         optimizer = optim.Adam([
                                 {'params':model.embed.parameters(),'lr': config.initial_embed_lr},
                                 {'params':model.fc.parameters()}
                                ],lr = config.initial_lr)
-    elif sys.argv[1]=="ibowimg":
+    elif sys.argv[1]!="ibowimg":
         model = relational_network_model.RelationalNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.output_size,config.output_size,config.max_answers)
         optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = config.initial_lr)
 
@@ -53,7 +53,7 @@ if __name__=="__main__":
     print("lr"+str(config.initial_lr))
     print("embedding lr"+str(config.initial_embed_lr))
     print("decay step %s, size %s" %(str(config.decay_step),str(config.decay_size)))
-    
+
     for i in tqdm(range(config.epochs)):
         lr_scheduler.step()
         batch_loss = 0
