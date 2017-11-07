@@ -74,7 +74,7 @@ class RelationalNetwork(nn.Module):
 
 	def init_hidden(self):
 		direction = 2 if self.bidirectional_flag else 1
-		return autograd.Variable(torch.rand(self.lstm_layer*direction,self.batch_size,self.hidden_size))
+		return autograd.Variable(torch.rand(self.lstm_layer*direction,self.batch_size,self.lstm_hidden_size))
 
 
 
