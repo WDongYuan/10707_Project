@@ -25,7 +25,7 @@ if __name__=="__main__":
                                 {'params':model.embed.parameters(),'lr': config.initial_embed_lr},
                                 {'params':model.fc.parameters()}
                                ],lr = config.initial_lr)
-    else if sys.argv[1]=="ibowimg":
+    elif sys.argv[1]=="ibowimg":
         model = relational_network_model.RelationalNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.output_size,config.output_size,config.max_answers)
         optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = config.initial_lr)
 
@@ -55,7 +55,7 @@ if __name__=="__main__":
             if sys.argv[1]=='rn':
                 q_len = Variable(q_len.cuda(async=True), **var_params)
                 o = model(q,v,q_len)
-            else if sys.argv[1]=="ibowimg"
+            elif sys.argv[1]=="ibowimg"
                 o = model(q,v)
             optimizer.zero_grad()
             loss =(-o*(a/10)).sum(dim=1).mean() # F.nll_loss(o,a)
