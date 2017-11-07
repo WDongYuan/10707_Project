@@ -22,9 +22,7 @@ if __name__=="__main__":
     cudnn.benchmark = True
     training,train_dict_size =  data.get_loader(train=True,full_batch = False)
     val,val_dict_size = data.get_loader(val=True,full_batch= False)
-    model = None
-    optimizer = None
-    q_len = None
+
     model = relational_network_model.RelationalNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.output_size,config.output_size,config.max_answers)
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = config.initial_lr)
 
