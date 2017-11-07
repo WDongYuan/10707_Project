@@ -53,7 +53,7 @@ class RelationalNetwork(nn.Module):
 		sent_emb = self.embed(sent_batch)
 
 		##LSTM
-		pack_sent = torch.nn.utils.rnn.pack_padded_sequence(sent_emb, sents_lengths, batch_first=True)
+		pack_sent = torch.nn.utils.rnn.pack_padded_sequence(sent_emb, list(sents_lengths.data), batch_first=True)
 		q_c_0 = self.init_hidden()
 		q_h_0 = self.init_hidden()
 		q_h_n, (self.q_h_t,self.q_c_t) = self.question_lstm(pack_sent,(self.q_h_0,self.q_c_0))
