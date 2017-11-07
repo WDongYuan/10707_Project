@@ -3,7 +3,7 @@ import json
 import torch
 import torch.nn as nn
 import torchvision.transforms as transforms
-import util.config as config
+import config as config
 
 
 def batch_accuracy(predicted, true):

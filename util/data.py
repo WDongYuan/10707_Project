@@ -7,8 +7,8 @@ import h5py
 import torch
 import torch.utils.data as data
 import torchvision.transforms as transforms
-import util.config as config
-import util.utils as utils
+import config as config
+import utils as utils
 import pdb
 import numpy as np
 def get_loader(train=False, val=False, test=False, full_batch = False):
