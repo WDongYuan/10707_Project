@@ -64,7 +64,6 @@ class VQA(data.Dataset):
         self.answers = list(prepare_answers(answers_json))
         self.questions = [self._encode_question(q) for q in self.questions]
         self.answers = [self._encode_answers(a) for a in self.answers]
-        self.only_text= only_text
         # v
         self.image_features_path = image_features_path
         self.coco_id_to_index = self._create_coco_id_to_index()
