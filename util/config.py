@@ -3,7 +3,7 @@ qa_path = 'data'  # directory containing the question and annotation jsons
 train_path = '../data/mscoco/train2014'  # directory of training images
 val_path = '../data/mscoco/val2014'  # directory of validation images
 test_path = '../data/mscoco/test2015'  # directory of test images
-preprocessed_path = '/10707data/resnet-7x7.h5'  # path where preprocessed features are saved to and loaded from
+preprocessed_path = '../data/resnet-2048.h5'  # path where preprocessed features are saved to and loaded from
 numpy_path = './data/features_id.npz'
 vocabulary_path = 'data/vocab/vocab.json'  # path where the used vocabularies for question and answers are saved to
 
@@ -13,9 +13,9 @@ dataset = 'mscoco'
 
 # preprocess config
 preprocess_batch_size = 64
-image_size = 75 #224 for resnet 2048*7*7 filter adoption #448 for google paper  # scale shorter end of image to this size and centre crop
-output_size = 5  # size of the feature maps after processing through a network
-output_features = 24 # number of feature maps thereof
+image_size = 448  # scale shorter end of image to this size and centre crop
+output_size = 2048  # size of the feature maps after processing through a network
+output_features = 1  # number of feature maps thereof
 central_fraction = 0.875  # only take this much of the centre when scaling and centre cropping
 word_embed_dim = 500
 image_embed_dim = 2048

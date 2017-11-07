@@ -15,36 +15,18 @@ import torch
 import torch.nn.utils
 import os
 #os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
-base = "ibowimg"
-rn = "rn"
-
-if sys.argv[1]==base:
-    import config_baseline as config
-elif sys.argv[1]==rn:
-    import config
+import config
 
 if __name__=="__main__":
     train = True
     cudnn.benchmark = True
     training,train_dict_size =  data.get_loader(train=True,full_batch = False)
     val,val_dict_size = data.get_loader(val=True,full_batch= False)
-    
-    
-    model = None
-    optimizer = None
-    q_len = None
-
-    # switch model here
-    if sys.argv[1] == base:
-        model = baseline.BOWIMG(config.max_answers,train_dict_size,config.word_embed_dim,config.image_embed_dim)
-        optimizer = optim.Adam([
-                                {'params':model.embed.parameters(),'lr': config.initial_embed_lr},
-                                {'params':model.fc.parameters()}
-                               ],lr = config.initial_lr)
-    elif sys.argv[1] == rn:
-        model = relational_network_model.RelationalNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.output_size,config.output_size,config.max_answers)
-        optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = config.initial_lr)
-
+    model = baseline.BOWIMG(config.max_answers,train_dict_size,config.word_embed_dim,config.image_embed_dim)
+    optimizer = optim.Adam([
+                            {'params':model.embed.parameters(),'lr': config.initial_embed_lr},
+                            {'params':model.fc.parameters()}
+                            ],lr = config.initial_lr)
     best_perf = 0.0
     model.cuda()
     var_params = {
@@ -66,15 +48,11 @@ if __name__=="__main__":
         lr_scheduler.step()
         batch_loss = 0
         train_accs = []
-        for v,q,a,item,q_len in training:
+        for v,q,a,_,_ in training:
             q = Variable(q.cuda(async=True),**var_params)
             a = Variable(a.cuda(async=True),**var_params)
             v = Variable(v.cuda(async=True),**var_params)
-            if sys.argv[1]==rn:
-                q_len = Variable(q_len.cuda(async=True), **var_params)
-                o = model(q,v,q_len)
-            elif sys.argv[1]==base:
-                o = model(q,v)
+            o = model(q,v)
             optimizer.zero_grad()
             loss =(-o*(a/10)).sum(dim=1).mean() # F.nll_loss(o,a)
             loss.backward()
@@ -87,15 +65,11 @@ if __name__=="__main__":
         print("epoch %s, loss %s, accuracy %s" %(str(i),str(batch_loss/config.batch_size),str(train_acc)))
         if (i+1)%config.val_interval ==0:
             val_accs = []
-            for v,q,a,item,q_len in val:
+            for v,q,a,_,_ in val:
                 q = Variable(q.cuda(async=True),**val_params)
                 a = Variable(a.cuda(async=True),**val_params)
                 v = Variable(v.cuda(async=True),**val_params)
-                if sys.argv[1]==rn:
-                    q_len = Variable(q_len.cuda(async=True), **val_params)
-                    o = model(q,v,q_len)
-                elif sys.argv[1]==base:
-                    o = model(q,v)
+                o = model(q,v)
                 acc = utils.batch_accuracy(o.data,a.data).cpu()
                 val_accs.append(acc.view(-1))
             val_acc=torch.cat(val_accs,dim=0).mean()
