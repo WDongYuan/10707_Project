@@ -1,7 +1,8 @@
 from model import baseline
 from model import relational_network_model
-from util import data
-from util import utils
+sys.path.append('./util')
+import data
+import utils
 from tqdm import *
 import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
@@ -13,14 +14,13 @@ import torch
 import torch.nn.utils
 import sys
 
-sys.path.append('./util')
 base = "ibowimg"
 rn = "rn"
 
 if sys.argv[1]==base:
-    import util.config_baseline as config
+    import config_baseline as config
 elif sys.argv[1]==rn:
-    from util import config
+    import config
 
 if __name__=="__main__":
     train = True
