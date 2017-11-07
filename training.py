@@ -13,11 +13,19 @@ import pdb
 import torch
 import torch.nn.utils
 import sys
+
+
+
 if __name__=="__main__":
     train = True
     cudnn.benchmark = True
     training,train_dict_size =  data.get_loader(train=True,full_batch = False)
     val,val_dict_size = data.get_loader(val=True,full_batch= False)
+    
+    model = None
+    optimizer = None
+    q_len = None
+
     # switch model here
     if sys.argv[1]!="rn":
         model = baseline.BOWIMG(config.max_answers,train_dict_size,config.word_embed_dim,config.image_embed_dim)
@@ -40,10 +48,12 @@ if __name__=="__main__":
         'volatile': True
     }
     lr_scheduler = scheduler.StepLR(optimizer, step_size = config.decay_step, gamma = config.decay_size)
+
     print("data is fully loaded")
     print("lr"+str(config.initial_lr))
     print("embedding lr"+str(config.initial_embed_lr))
     print("decay step %s, size %s" %(str(config.decay_step),str(config.decay_size)))
+    
     for i in tqdm(range(config.epochs)):
         lr_scheduler.step()
         batch_loss = 0
