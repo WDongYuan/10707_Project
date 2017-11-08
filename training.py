@@ -59,7 +59,6 @@ if __name__=="__main__":
             optimizer.zero_grad()
             loss =(-o*(a/10)).sum(dim=1).mean() # F.nll_loss(o,a)
             loss.backward()
-            torch.nn.utils.clip_grad_norm(model.parameters(), 20)
             optimizer.step()
             batch_loss += loss.data[0]
             acc = utils.batch_accuracy(o.data,a.data).cpu()
