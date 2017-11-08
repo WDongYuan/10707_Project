@@ -21,6 +21,8 @@ class RelationalNetwork(nn.Module):
 		self.lstm_hidden_size = 500
 		self.question_lstm = nn.LSTM(self.word_embedding_size, self.lstm_hidden_size,
 									num_layers=self.lstm_layer,bidirectional=self.bidirectional_flag,batch_first=True)
+		self.q_c_0 = self.init_hidden()
+		self.q_h_0 = self.init_hidden()
 
 		##CNN
 		self.channel = channel
@@ -56,10 +58,8 @@ class RelationalNetwork(nn.Module):
 
 		##LSTM
 		pack_sent = torch.nn.utils.rnn.pack_padded_sequence(sent_emb, list(sents_lengths.data.type(torch.LongTensor)), batch_first=True)
-		q_c_0 = self.init_hidden()
-		q_h_0 = self.init_hidden()
 		self.question_lstm.flatten_parameters()
-		q_h_n, (q_h_t,q_c_t) = self.question_lstm(pack_sent,(q_h_0,q_c_0))
+		q_h_n, (q_h_t,q_c_t) = self.question_lstm(pack_sent,(self.q_h_0,self.q_c_0))
 
 		##Concat
 		lstm_expand = q_h_t.permute(1,0,2).contiguous().view(self.batch_size,1,self.lstm_hidden_size*self.lstm_layer*self.direction).expand(self.batch_size,self.obj_num**2,self.lstm_hidden_size*self.lstm_layer*self.direction)
