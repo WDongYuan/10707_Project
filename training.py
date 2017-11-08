@@ -30,7 +30,10 @@ if __name__=="__main__":
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = config.initial_lr)
 
     best_perf = 0.0
-    model = nn.parallel.DataParallel(model,[0,1]).cuda()
+    if sys.argv[1] == 2:    
+        model = nn.parallel.DataParallel(model,[0,1]).cuda()
+    elif sys.argv[1] == 1:
+        model = model.cuda()
     var_params = {
         'requires_grad': False,
 	    'volatile': False
