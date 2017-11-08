@@ -14,7 +14,6 @@ import pdb
 import torch
 import torch.nn.utils
 import os
-os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
 import config
 import torch.nn as nn
 from datetime import datetime
@@ -32,8 +31,10 @@ if __name__=="__main__":
 
     best_perf = 0.0
     if sys.argv[1] == 2:    
+        os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
         model = nn.parallel.DataParallel(model,[0,1]).cuda()
     elif sys.argv[1] == 1:
+        os.environ["CUDA_VISIBLE_DEVICES"] = "0"
         model = model.cuda()
     var_params = {
         'requires_grad': False,
