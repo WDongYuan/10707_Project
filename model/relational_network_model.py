@@ -51,14 +51,14 @@ class RelationalNetwork(nn.Module):
 		self.LogSoftmax = nn.LogSoftmax()
 
 
-	def forward(self,sent_batch,conv_map_batch,sents_lengths):
+	def forward(self,sent_batch,conv_map_batch,sents_lengths,param):
 		batch_size , sentlength = sent_batch.size()
 		self.batch_size = batch_size
 		sent_emb = self.embed(sent_batch)
 
 		##LSTM
-		q_c_0 = self.init_hidden()
-		q_h_0 = self.init_hidden()
+		q_c_0 = self.init_hidden(param)
+		q_h_0 = self.init_hidden(param)
 		pack_sent = torch.nn.utils.rnn.pack_padded_sequence(sent_emb, list(sents_lengths.data.type(torch.LongTensor)), batch_first=True)
 		self.question_lstm.flatten_parameters()
 		q_h_n, (q_h_t,q_c_t) = self.question_lstm(pack_sent,(q_h_0,q_c_0))
@@ -79,9 +79,9 @@ class RelationalNetwork(nn.Module):
 		out = self.LogSoftmax(out)
 		return out
 
-	def init_hidden(self):
+	def init_hidden(self,param):
 		direction = 2 if self.bidirectional_flag else 1
-		return autograd.Variable(torch.rand(self.lstm_layer*direction,self.batch_size,self.lstm_hidden_size).cuda(async=True))
+		return autograd.Variable(torch.rand(self.lstm_layer*direction,self.batch_size,self.lstm_hidden_size).cuda(async=True),**param)
 
 
 
