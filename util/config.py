@@ -23,7 +23,7 @@ image_embed_dim = 2048
 # training config
 epochs = 100
 batch_size = 100
-initial_lr = 0.0001 # default Adam lr
+initial_lr = 0.001 # default Adam lr
 initial_embed_lr = 0.001
 lr_halflife = 50000  # in iterations
 data_workers = 8
