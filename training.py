@@ -50,7 +50,7 @@ if __name__=="__main__":
         lr_scheduler.step()
         batch_loss = 0
         train_accs = []
-        print datetime.now()
+        print(datetime.now())
         for v,q,a,item,q_len in training:
             q = Variable(q.cuda(async=True),**var_params)
             a = Variable(a.cuda(async=True),**var_params)
