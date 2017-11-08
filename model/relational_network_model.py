@@ -30,7 +30,7 @@ class RelationalNetwork(nn.Module):
 		self.map_w = map_w
 		self.map_h = map_h
 		self.kernel_size = 3
-		self.padding_size = int((self.kernel_size-1)/2)
+		self.padding_size = (self.kernel_size-1) // 2
 		self.stride = 1
 		self.conv = nn.Sequential(
 			nn.Conv2d(in_channel,out_channel,(self.kernel_size,self.kernel_size),stride=self.stride,padding=self.padding_size),
