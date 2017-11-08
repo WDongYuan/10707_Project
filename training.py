@@ -35,7 +35,7 @@ if __name__=="__main__":
         model = nn.parallel.DataParallel(model,[0,1]).cuda()
     elif sys.argv[1] == 1:
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-        model = model.cuda()
+        model.cuda()
     var_params = {
         'requires_grad': False,
 	    'volatile': False
