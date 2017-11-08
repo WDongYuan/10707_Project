@@ -21,7 +21,8 @@ import torch.nn as nn
 
 if __name__=="__main__":
     train = True
-    cudnn.benchmark = True
+    # cudnn.benchmark = True
+    torch.backends.cudnn.enabled = False
     training,train_dict_size =  data.get_loader(train=True,full_batch = False)
     val,val_dict_size = data.get_loader(val=True,full_batch= False)
 
