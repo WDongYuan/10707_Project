@@ -32,4 +32,4 @@ cuda = True
 val_interval = 10
 decay_step = 15
 decay_size = 0.1
-rn_conv_channel = 200
+rn_conv_channel = 100
