@@ -17,7 +17,7 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
 import config
 import torch.nn as nn
-import time
+import datetime
 
 if __name__=="__main__":
     train = True
@@ -50,7 +50,7 @@ if __name__=="__main__":
         lr_scheduler.step()
         batch_loss = 0
         train_accs = []
-        print time.time()
+        print datetime.now()
         for v,q,a,item,q_len in training:
             q = Variable(q.cuda(async=True),**var_params)
             a = Variable(a.cuda(async=True),**var_params)
