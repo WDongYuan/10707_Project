@@ -7,7 +7,7 @@ import torch.optim as optim
 import torch.backends.cudnn as cudnn
 
 class RelationalNetwork(nn.Module):
-	def __init__(self,voc_size,word_embedding_size,channel,map_w,map_h,answer_voc_size):
+	def __init__(self,voc_size,word_embedding_size,in_channel,out_channel,map_w,map_h,answer_voc_size):
 		##Embedding
 		super(RelationalNetwork, self).__init__()
 		self.voc_size = voc_size
@@ -25,12 +25,20 @@ class RelationalNetwork(nn.Module):
 		# self.q_h_0 = self.init_hidden()
 
 		##CNN
-		self.channel = channel
+		self.in_channel = in_channel
+		self.out_channel = out_channel
 		self.map_w = map_w
 		self.map_h = map_h
-		self.obj_num = self.map_w*self.map_h
+		self.kernel_size = 3
+		self.padding_size = (self.kernel_size-1)/2
+		self.stride = 1
+		self.conv = nn.Sequential(
+			nn.Conv2d(in_channel,out_channel,(self.kernel_size,self.kernel_size),stride=self.stride,padding=self.padding_size),
+			nn.BatchNorm2d(self.out_channel),
+			nn.ReLU())
 
-		self.concat_length = self.channel*2+self.lstm_hidden_size*self.lstm_layer*self.direction
+		self.obj_num = self.map_w*self.map_h
+		self.concat_length = self.out_channel*2+self.lstm_hidden_size*self.lstm_layer*self.direction
 
 		##g_mlp
 		self.g_mlp_hidden_size = 100
@@ -56,6 +64,9 @@ class RelationalNetwork(nn.Module):
 		self.batch_size = batch_size
 		sent_emb = self.embed(sent_batch)
 
+		##CNN
+		out = self.conv(conv_map_batch)
+
 		##LSTM
 		q_c_0 = self.init_hidden(param)
 		q_h_0 = self.init_hidden(param)
@@ -65,11 +76,11 @@ class RelationalNetwork(nn.Module):
 
 		##Concat
 		lstm_expand = q_h_t.permute(1,0,2).contiguous().view(self.batch_size,1,self.lstm_hidden_size*self.lstm_layer*self.direction).expand(self.batch_size,self.obj_num**2,self.lstm_hidden_size*self.lstm_layer*self.direction)
-		out = conv_map_batch.permute(0,2,3,1)
-		conv_expand_1 = out.unsqueeze(1).expand(self.batch_size,self.obj_num,self.map_h,self.map_w,self.channel)
-		conv_expand_1 = conv_expand_1.contiguous().view(self.batch_size,self.obj_num**2,self.channel)
-		conv_expand_2 = out.unsqueeze(3).expand(self.batch_size,self.map_h,self.map_w,self.obj_num,self.channel)
-		conv_expand_2 = conv_expand_2.contiguous().view(self.batch_size,self.obj_num**2,self.channel)
+		out = out.permute(0,2,3,1)
+		conv_expand_1 = out.unsqueeze(1).expand(self.batch_size,self.obj_num,self.map_h,self.map_w,self.out_channel)
+		conv_expand_1 = conv_expand_1.contiguous().view(self.batch_size,self.obj_num**2,self.out_channel)
+		conv_expand_2 = out.unsqueeze(3).expand(self.batch_size,self.map_h,self.map_w,self.obj_num,self.out_channel)
+		conv_expand_2 = conv_expand_2.contiguous().view(self.batch_size,self.obj_num**2,self.out_channel)
 		out = torch.cat((lstm_expand,conv_expand_1,conv_expand_2),2)
 
 		out = self.g_mlp(out.view(-1,self.concat_length)).view(self.batch_size,-1,self.g_mlp_hidden_size).sum(1)
