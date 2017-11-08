@@ -17,7 +17,7 @@ import os
 os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
 import config
 import torch.nn as nn
-import datetime
+from datetime import datetime
 
 if __name__=="__main__":
     train = True
