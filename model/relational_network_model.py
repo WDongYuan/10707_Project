@@ -15,7 +15,7 @@ class RelationalNetwork(nn.Module):
 		self.embed = nn.Embedding(self.voc_size, self.word_embedding_size,padding_idx=0)
 
 		##Attention
-		self.att_linear = nn.Linear((in_channel+lstm_hidden_size)*map_h*map_w,map_h*map_w)
+		self.att_linear = nn.Linear((in_channel+lstm_hidden_size)*map_h*map_w,map_h*map_w, bias=False)
 
 		##LSTM
 		self.lstm_layer = 1
