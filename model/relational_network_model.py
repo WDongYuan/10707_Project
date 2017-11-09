@@ -47,7 +47,7 @@ class RelationalNetwork(nn.Module):
 		self.g_mlp_hidden_size = g_mlp_hidden_size
 		self.g_mlp = nn.Sequential(
 			nn.Linear(self.concat_length,self.g_mlp_hidden_size),
-			nn.ReLU()，
+			nn.ReLU(),
 			nn.Linear(self.g_mlp_hidden_size,self.g_mlp_hidden_size),
 			nn.ReLU())
 
