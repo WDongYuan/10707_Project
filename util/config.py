@@ -30,6 +30,6 @@ data_workers = 8
 max_answers = 3000
 cuda = True
 val_interval = 10
-decay_step = 15
+decay_step = 5
 decay_size = 0.1
 rn_conv_channel = 50
