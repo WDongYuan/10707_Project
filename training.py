@@ -48,6 +48,7 @@ if __name__=="__main__":
 
     print("data is fully loaded")
     print("lr"+str(lr))
+    print("decay step %s, size %s" %(str(config.decay_step),str(config.decay_size)))
     for i in tqdm(range(config.epochs)):
         lr_scheduler.step()
         batch_loss = 0
