@@ -30,10 +30,10 @@ if __name__=="__main__":
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = lr)
 
     best_perf = 0.0
-    if sys.argv[1] == 2:    
+    if int(sys.argv[1]) == 2:    
         os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
         model = nn.parallel.DataParallel(model,[0,1]).cuda()
-    elif sys.argv[1] == 1:
+    elif int(sys.argv[1]) == 1:
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
         model.cuda()
     var_params = {
