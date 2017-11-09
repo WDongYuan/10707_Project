@@ -7,7 +7,7 @@ import torch.optim as optim
 import torch.backends.cudnn as cudnn
 
 class RelationalNetwork(nn.Module):
-	def __init__(self,voc_size,word_embedding_size,in_channel,out_channel,map_w,map_h,answer_voc_size,lstm_hidden_size,g_mlp_hidden_size):
+	def __init__(self,voc_size,word_embedding_size,in_channel,out_channel,map_w,map_h,answer_voc_size,lstm_hidden_size,g_mlp_hidden_size,relation_length):
 		##Embedding
 		super(RelationalNetwork, self).__init__()
 		self.voc_size = voc_size
@@ -15,7 +15,8 @@ class RelationalNetwork(nn.Module):
 		self.embed = nn.Embedding(self.voc_size, self.word_embedding_size,padding_idx=0)
 
 		##Attention
-		self.att_linear = nn.Linear((in_channel+lstm_hidden_size)*map_h*map_w,map_h*map_w, bias=False)
+		# self.att_linear = nn.Linear((in_channel+lstm_hidden_size)*map_h*map_w,map_h*map_w, bias=False)
+		self.att_linear = nn.Linear(in_channel+lstm_hidden_size,1, bias=False)
 
 		##LSTM
 		self.lstm_layer = 1
@@ -26,7 +27,7 @@ class RelationalNetwork(nn.Module):
 									num_layers=self.lstm_layer,bidirectional=self.bidirectional_flag,batch_first=True)
 		# self.q_c_0 = self.init_hidden()
 		# self.q_h_0 = self.init_hidden()
-
+		self.relation_length = relation_length
 		##CNN
 		self.in_channel = in_channel
 		self.out_channel = out_channel
@@ -48,7 +49,7 @@ class RelationalNetwork(nn.Module):
 		self.g_mlp = nn.Sequential(
 			nn.Linear(self.concat_length,self.g_mlp_hidden_size),
 			nn.ReLU(),
-			nn.Linear(self.g_mlp_hidden_size,self.g_mlp_hidden_size),
+			nn.Linear(self.g_mlp_hidden_size,self.relation_length),
 			nn.ReLU())
 
 		##f_mlp
@@ -88,7 +89,8 @@ class RelationalNetwork(nn.Module):
 		q_h_t = q_h_t.permute(1,0,2).view(self.batch_size,-1)
 		q = q_h_t.unsqueeze(2).expand(self.batch_size,self.lstm_hidden_size,self.map_h*self.map_w)
 		i = conv_map_batch.view(self.batch_size,-1,self.map_h*self.map_w)
-		attention = torch.cat([i,q],1).view(self.batch_size,-1)
+		# attention = torch.cat([i,q],1).view(self.batch_size,-1)
+		attention = torch.cat([i,q],1).permute(0,2,1).view(-1,self.in_channel+self.lstm_hidden_size)
 		attention = F.tanh(self.att_linear(attention).view(-1,self.map_h*self.map_w))
 		attention = self.att_softmax(attention).unsqueeze(1).expand(self.batch_size,self.in_channel,self.map_h*self.map_w)
 		attention = torch.mul(attention,i).sum(2).squeeze()
