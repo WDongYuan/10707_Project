@@ -83,8 +83,10 @@ class RelationalNetwork(nn.Module):
 
 		#Attention
 		q = q_h_t.unsqueeze(2).expand(self.batch_size,self.in_channel,self.map_h*self.map_w)
-		attention = torch.cat([conv_map_batch.view(self.batch_size,-1,self.map_h*self.map_w),q],1)
-		attention = F.softmax(F.tanh(self.att_linear(attention)),dim=2)
+		i = conv_map_batch.view(self.batch_size,-1,self.map_h*self.map_w)
+		attention = torch.cat([i,q],1)
+		attention = F.tanh(self.att_linear(attention))
+		attention = nn.softmax(attention).unsqueeze(1).expand(self.batch_size,self.in_channel,self.map_h*self.map_w)
 		attention = (attention*conv_map_batch).sum(2).squeeze()
 
 		#Classifier
