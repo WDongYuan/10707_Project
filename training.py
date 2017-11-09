@@ -26,7 +26,7 @@ if __name__=="__main__":
     val,val_dict_size = data.get_loader(val=True,full_batch= False)
 
     model = relational_network_model.RelationalNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
-            config.output_size,config.output_size,config.max_answers,)
+            config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,config.g_mlp_hidden_size)
     lr = float(sys.argv[2])
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = lr)
 
