@@ -47,13 +47,13 @@ class RelationalNetwork(nn.Module):
 		self.g_mlp_hidden_size = g_mlp_hidden_size
 		self.g_mlp = nn.Sequential(
 			nn.Linear(self.concat_length,self.g_mlp_hidden_size),
-			nn.ReLU())
+			nn.Tanh())
 
 		##f_mlp
 		self.answer_voc_size = answer_voc_size
 		self.f_mlp = nn.Sequential(
 			nn.Linear(self.g_mlp_hidden_size + self.in_channel + self.lstm_hidden_size ,self.answer_voc_size),
-			nn.ReLU())
+			nn.Tanh())
 		self.LogSoftmax = nn.LogSoftmax()
 
 	def forward(self,sent_batch,conv_map_batch,sents_lengths,param):
