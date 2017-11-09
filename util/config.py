@@ -33,3 +33,5 @@ val_interval = 10
 decay_step = 5
 decay_size = 0.1
 rn_conv_channel = 50
+lstm_hidden_size = 512
+g_mlp_hidden_size = 512
