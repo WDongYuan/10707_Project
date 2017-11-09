@@ -55,6 +55,7 @@ class RelationalNetwork(nn.Module):
 			nn.Linear(self.g_mlp_hidden_size + self.in_channel + self.lstm_hidden_size ,self.answer_voc_size),
 			nn.Tanh())
 		self.LogSoftmax = nn.LogSoftmax()
+		self.att_softmax = nn.Softmax()
 
 	def forward(self,sent_batch,conv_map_batch,sents_lengths,param):
 		batch_size , sentlength = sent_batch.size()
@@ -86,7 +87,7 @@ class RelationalNetwork(nn.Module):
 		i = conv_map_batch.view(self.batch_size,-1,self.map_h*self.map_w)
 		attention = torch.cat([i,q],1).view(self.batch_size,-1)
 		attention = F.tanh(self.att_linear(attention).view(-1,self.map_h*self.map_w))
-		attention = F.Softmax(attention).unsqueeze(1).expand(self.batch_size,self.in_channel+self.lstm_hidden_size,self.map_h*self.map_w)
+		attention = self.att_softmax(attention).unsqueeze(1).expand(self.batch_size,self.in_channel+self.lstm_hidden_size,self.map_h*self.map_w)
 		attention = (attention*conv_map_batch).sum(2).squeeze()
 
 		#Classifier
