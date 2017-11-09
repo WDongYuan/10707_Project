@@ -37,7 +37,7 @@ class RelationalNetwork(nn.Module):
 		self.stride = 1
 		self.conv = nn.Sequential(
 			nn.Conv2d(in_channel,out_channel,(self.kernel_size,self.kernel_size),stride=self.stride,padding=self.padding_size),
-			nn.BatchNorm2d(self.out_channel),
+			#nn.BatchNorm2d(self.out_channel),
 			nn.ReLU())
 
 		self.obj_num = self.map_w*self.map_h
@@ -47,13 +47,15 @@ class RelationalNetwork(nn.Module):
 		self.g_mlp_hidden_size = g_mlp_hidden_size
 		self.g_mlp = nn.Sequential(
 			nn.Linear(self.concat_length,self.g_mlp_hidden_size),
-			nn.Tanh())
+			nn.ReLU()，
+			nn.Linear(self.g_mlp_hidden_size,self.g_mlp_hidden_size),
+			nn.ReLU())
 
 		##f_mlp
 		self.answer_voc_size = answer_voc_size
 		self.f_mlp = nn.Sequential(
 			nn.Linear(self.g_mlp_hidden_size + self.in_channel + self.lstm_hidden_size ,self.answer_voc_size),
-			nn.Tanh())
+			nn.ReLU())
 		self.LogSoftmax = nn.LogSoftmax()
 		self.att_softmax = nn.Softmax()
 
