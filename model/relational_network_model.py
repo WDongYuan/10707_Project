@@ -5,6 +5,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
 import torch.backends.cudnn as cudnn
+from torch.nn.init import kaiming_uniform
 
 class RelationalNetwork(nn.Module):
 	def __init__(self,voc_size,word_embedding_size,in_channel,out_channel,map_w,map_h,answer_voc_size,lstm_hidden_size,g_mlp_hidden_size,relation_length):
@@ -60,6 +61,13 @@ class RelationalNetwork(nn.Module):
 		self.LogSoftmax = nn.LogSoftmax()
 		self.att_softmax = nn.Softmax()
 
+
+		for layer in self.modules():
+            if isinstance(layer, nn.Linear) or isinstance(layer, nn.Conv2d):
+                kaiming_uniform(layer.weight)
+                if layer.bias is not None:
+                    layer.bias.data.zero_()
+
 	def forward(self,sent_batch,conv_map_batch,sents_lengths,param):
 		batch_size , sentlength = sent_batch.size()
 		self.batch_size = batch_size
@@ -104,6 +112,5 @@ class RelationalNetwork(nn.Module):
 	def init_hidden(self,param):
 		direction = 2 if self.bidirectional_flag else 1
 		return autograd.Variable(torch.rand(self.lstm_layer*direction,self.batch_size,self.lstm_hidden_size).cuda(async=True),**param)
-
 
 
