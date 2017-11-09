@@ -53,9 +53,8 @@ class RelationalNetwork(nn.Module):
 			nn.Linear(self.g_mlp_hidden_size,self.f_mlp_hidden_size),
 			nn.ReLU(),
 			nn.Linear(self.f_mlp_hidden_size,self.answer_voc_size),
-			nn.ReLU(),
+			nn.ReLU())
 		self.LogSoftmax = nn.LogSoftmax()
-
 
 	def forward(self,sent_batch,conv_map_batch,sents_lengths,param):
 		batch_size , sentlength = sent_batch.size()
