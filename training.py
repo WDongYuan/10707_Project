@@ -53,6 +53,7 @@ if __name__=="__main__":
         batch_loss = 0
         train_accs = []
         print(datetime.now())
+        model.train()
         for v,q,a,item,q_len in training:
             q = Variable(q.cuda(async=True),**var_params)
             a = Variable(a.cuda(async=True),**var_params)
@@ -70,6 +71,7 @@ if __name__=="__main__":
         print("epoch %s, loss %s, accuracy %s" %(str(i),str(batch_loss/config.batch_size),str(train_acc)))
         if (i+1)%config.val_interval ==0:
             val_accs = []
+            model.eval()
             for v,q,a,item,q_len in val:
                 q = Variable(q.cuda(async=True),**val_params)
                 a = Variable(a.cuda(async=True),**val_params)

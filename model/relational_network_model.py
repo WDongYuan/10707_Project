@@ -41,14 +41,14 @@ class RelationalNetwork(nn.Module):
 		self.concat_length = self.out_channel*2+self.lstm_hidden_size*self.lstm_layer*self.direction
 
 		##g_mlp
-		self.g_mlp_hidden_size = 512
+		self.g_mlp_hidden_size = 100
 		self.g_mlp = nn.Sequential(
 			nn.Linear(self.concat_length,self.g_mlp_hidden_size),
 			nn.ReLU())
 
 		##f_mlp
 		self.answer_voc_size = answer_voc_size
-		self.f_mlp_hidden_size = 512
+		self.f_mlp_hidden_size = 100
 		self.f_mlp = nn.Sequential(
 			nn.Linear(self.g_mlp_hidden_size,self.f_mlp_hidden_size),
 			nn.ReLU(),
