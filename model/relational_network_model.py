@@ -54,7 +54,6 @@ class RelationalNetwork(nn.Module):
 			nn.ReLU(),
 			nn.Linear(self.f_mlp_hidden_size,self.answer_voc_size),
 			nn.ReLU(),
-			nn.Dropout(p=0.9))
 		self.LogSoftmax = nn.LogSoftmax()
 
 
