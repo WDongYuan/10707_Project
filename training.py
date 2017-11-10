@@ -27,16 +27,22 @@ if __name__=="__main__":
 
     model = relational_network_model.RelationalNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
             config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,config.g_mlp_hidden_size,config.relation_length)
-    lr = float(sys.argv[2])
-    optimizer = optim.RMSprop([p for p in model.parameters() if p.requires_grad],lr = lr)
-
-    best_perf = 0.0
     if int(sys.argv[1]) == 2:    
         os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
         model = nn.parallel.DataParallel(model,[0,1]).cuda()
     elif int(sys.argv[1]) == 1:
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
         model.cuda()
+    lr = float(sys.argv[2])
+    embed_params = list(map(id, model.embed.parameters()))
+    base_params = filter(lambda p: id(p) not in embed_params,model.parameters())
+    optimizer = optim.RMSprop([
+                            {'params':model.embed.parameters(),'lr': config.initial_embed_lr},
+                            {'params':base_params}
+                            ],lr = lr)
+
+    best_perf = 0.0
+    
     var_params = {
         'requires_grad': False,
 	    'volatile': False
@@ -49,6 +55,7 @@ if __name__=="__main__":
 
     print("data is fully loaded")
     print("lr"+str(lr))
+    print("embedding lr"+str(config.initial_embed_lr))
     print("decay step %s, size %s" %(str(config.decay_step),str(config.decay_size)))
     for i in tqdm(range(config.epochs)):
         lr_scheduler.step()
