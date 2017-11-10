@@ -28,7 +28,7 @@ if __name__=="__main__":
     model = relational_network_model.RelationalNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
             config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,config.g_mlp_hidden_size,config.relation_length)
     lr = float(sys.argv[2])
-    optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = lr)
+    optimizer = optim.RMSprop([p for p in model.parameters() if p.requires_grad],lr = lr)
 
     best_perf = 0.0
     if int(sys.argv[1]) == 2:    
