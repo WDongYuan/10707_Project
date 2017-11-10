@@ -53,7 +53,7 @@ if __name__=="__main__":
         'requires_grad': False,
         'volatile': True
     }
-    lr_scheduler = scheduler.StepLR(optimizer, step_size = config.decay_step, gamma = config.decay_size)
+    #lr_scheduler = scheduler.StepLR(optimizer, step_size = config.decay_step, gamma = config.decay_size)
 
     print("data is fully loaded")
     print("lr"+str(lr))
