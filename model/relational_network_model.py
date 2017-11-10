@@ -93,7 +93,7 @@ class RelationalNetwork(nn.Module):
 		out = self.g_mlp(out.view(-1,self.concat_length)).view(self.batch_size,-1,self.g_mlp_hidden_size).sum(1).squeeze()
 
 		#Attention
-		q_h_t = q_h_t.permute(1,0,2).view(self.batch_size,-1)
+		q_h_t = q_h_t.permute(1,0,2).contiguous().view(self.batch_size,-1)
 		q = q_h_t.unsqueeze(2).expand(self.batch_size,self.lstm_hidden_size,self.map_h*self.map_w)
 		i = conv_map_batch.view(self.batch_size,-1,self.map_h*self.map_w)
 		# attention = torch.cat([i,q],1).view(self.batch_size,-1)
