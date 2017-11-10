@@ -97,7 +97,7 @@ class RelationalNetwork(nn.Module):
 		q = q_h_t.unsqueeze(2).expand(self.batch_size,self.lstm_hidden_size,self.map_h*self.map_w)
 		i = conv_map_batch.view(self.batch_size,-1,self.map_h*self.map_w)
 		# attention = torch.cat([i,q],1).view(self.batch_size,-1)
-		attention = torch.cat([i,q],1).permute(0,2,1).view(-1,self.in_channel+self.lstm_hidden_size)
+		attention = torch.cat([i,q],1).permute(0,2,1).contiguous().view(-1,self.in_channel+self.lstm_hidden_size)
 		attention = F.tanh(self.att_linear(attention).view(-1,self.map_h*self.map_w))
 		attention = self.att_softmax(attention).unsqueeze(1).expand(self.batch_size,self.in_channel,self.map_h*self.map_w)
 		attention = torch.mul(attention,i).sum(2).squeeze()
