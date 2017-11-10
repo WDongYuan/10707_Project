@@ -27,6 +27,8 @@ if __name__=="__main__":
 
     model = relational_network_model.RelationalNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
             config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,config.g_mlp_hidden_size,config.relation_length)
+    if len(sys.argv) == 4
+        model = torch.load(sys.argv[3])
     if int(sys.argv[1]) == 2:    
         os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
         model = nn.parallel.DataParallel(model,[0,1]).cuda()
