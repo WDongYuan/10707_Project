@@ -53,14 +53,14 @@ if __name__=="__main__":
         'requires_grad': False,
         'volatile': True
     }
-    lr_scheduler = scheduler.StepLR(optimizer, step_size = config.decay_step, gamma = config.decay_size)
+    #lr_scheduler = scheduler.StepLR(optimizer, step_size = config.decay_step, gamma = config.decay_size)
 
     print("data is fully loaded")
     print("lr"+str(lr))
     print("embedding lr"+str(config.initial_embed_lr))
-    print("decay step %s, size %s" %(str(config.decay_step),str(config.decay_size)))
+    #print("decay step %s, size %s" %(str(config.decay_step),str(config.decay_size)))
     for i in tqdm(range(config.epochs)):
-        lr_scheduler.step()
+        #lr_scheduler.step()
         batch_loss = 0
         train_accs = []
         print(datetime.now())
