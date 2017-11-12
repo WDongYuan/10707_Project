@@ -4,14 +4,14 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import torch.autograd as autograd
 class hier_san(nn.Module):
-    def __init__(self,stack_size,vocab_size,ans_size,embed_size,lstm_hidden_size,channel_size,loc_size,feat_hidden_size):
+    def __init__(self,stack_size,vocab_size,ans_size,embed_size,lstm_hidden_size,channel_size,loc_size,feat_hidden_size,out_hidden_size):
         super(hier_san,self).__init__()
         self.embed = nn.Embedding(vocab_size, embed_size,padding_idx=0)
         self.stack_size = stack_size
         self.embed_size = embed_size
         self.lstm_hidden_size = lstm_hidden_size
         self.out_nonlinear = nn.LogSoftmax()
-        self.out_linear = nn.Linear(lstm_hidden_size + channel_size,ans_size)
+        self.out_linear1 = nn.Linear(lstm_hidden_size + channel_size,out_hidden_size)
         self.lstm_layer = 1
         self.bidirectional_flag = False
         self.direction = 2 if self.bidirectional_flag else 1
@@ -26,6 +26,7 @@ class hier_san(nn.Module):
         self.feat_hidden_size = feat_hidden_size
         self.img_size = loc_size * loc_size
         self.channel_size = channel_size
+        self.out_linear2 = nn.Linear(out_hidden_size,ans_size)
 
     def forward(self,q,v,q_length,param):
         batch_size ,_,_,_ = v.size()
@@ -66,7 +67,8 @@ class hier_san(nn.Module):
         out_q = torch.bmm(q.transpose(1,2),out_q).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
         out_i = torch.bmm(v,out_i).squeeze()
 
-        out = self.out_nonlinear(self.out_linear(torch.cat([out_q,out_i],1)))
+        out = F.tanh(self.out_linear1(torch.cat([out_q,out_i],1)))
+        out = self.out_nonlinear(self.out_linear2(out))
 
         return out
 

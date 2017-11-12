@@ -32,7 +32,8 @@ if __name__=="__main__":
                                 config.lstm_hidden_size,
                                 config.image_embed_dim,
                                 config.output_size,
-                                config.feat_hidden_size
+                                config.feat_hidden_size,
+                                config.out_hidden_size
                                 )
     if len(sys.argv) == 4:
         model = torch.load(sys.argv[3])
