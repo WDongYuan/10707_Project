@@ -62,20 +62,20 @@ class hier_san(nn.Module):
         del h_i,h_q
         out_q = F.softmax(self.att_q(out_q.transpose(1,2)).squeeze()).unsqueeze(2) # (b, l)
         out_i = F.softmax(self.att_i(out_i.transpose(1,2)).squeeze()).unsqueeze(2) # (b, s)
-        out_i = out_i.expand(batch_size,self.img_size,self.channel_size)*v.transpose(1,2)
-        out_i = self.linear_i(out_i.view(-1,self.channel_size)).view(-1,self.feat_hidden_size,self.img_size) # (b, c, s) * (b, c, s) and (b, c, s) dot (k, c) -> (b,k,s)
-        out_q = out_q.expand(batch_size,seq_size,self.lstm_hidden_size)*q
-        out_q = self.linear_q(out_q.view(-1,self.lstm_hidden_size)).view(-1,self.feat_hidden_size,seq_size) # (b, h, l) * (b, h, l) and (b, h, l) dot (k, h ) -> (b,k,l)
-        h_i = F.tanh(out_i + torch.bmm(out_q,c)) # (b, k, s)
-        h_q = F.tanh(out_q + torch.bmm(out_i,c.transpose(1,2))) #(b, k, l)
-        out_q = h_q
-        out_i = h_i
-        del h_i,h_q
-        out_q = F.softmax(self.att_q(out_q.transpose(1,2)).squeeze()).unsqueeze(2) # (b, l)
-        out_i = F.softmax(self.att_i(out_i.transpose(1,2)).squeeze()).unsqueeze(2) # (b, s)
 
-        print(q.size())
-        print(out_i.size())
+        if self.stack_size > 1:
+            out_i = out_i.expand(batch_size,self.img_size,self.channel_size)*v.transpose(1,2)
+            out_i = self.linear_i(out_i.view(-1,self.channel_size)).view(-1,self.feat_hidden_size,self.img_size) # (b, c, s) * (b, c, s) and (b, c, s) dot (k, c) -> (b,k,s)
+            out_q = out_q.expand(batch_size,seq_size,self.lstm_hidden_size)*q
+            out_q = self.linear_q(out_q.view(-1,self.lstm_hidden_size)).view(-1,self.feat_hidden_size,seq_size) # (b, h, l) * (b, h, l) and (b, h, l) dot (k, h ) -> (b,k,l)
+            h_i = F.tanh(out_i + torch.bmm(out_q,c)) # (b, k, s)
+            h_q = F.tanh(out_q + torch.bmm(out_i,c.transpose(1,2))) #(b, k, l)
+            out_q = h_q
+            out_i = h_i
+            del h_i,h_q
+            out_q = F.softmax(self.att_q(out_q.transpose(1,2)).squeeze()).unsqueeze(2) # (b, l)
+            out_i = F.softmax(self.att_i(out_i.transpose(1,2)).squeeze()).unsqueeze(2) # (b, s)
+
         out_q = torch.bmm(q.transpose(1,2),out_q).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
         out_i = torch.bmm(v,out_i).squeeze()
 
