@@ -7,7 +7,7 @@ class hier_san(nn.Module):
     def __init__(self,stack_size,vocab_size,ans_size,embed_size,lstm_hidden_size,channel_size,loc_size,feat_hidden_size):
         super(hier_san,self).__init__()
         self.embed = nn.Embedding(vocab_size, embed_size,padding_idx=0)
-        self.stack_size = vocab_size
+        self.stack_size = stack_size
         self.embed_size = embed_size
         self.lstm_hidden_size = lstm_hidden_size
         self.out_nonlinear = nn.LogSoftmax()
@@ -50,20 +50,7 @@ class hier_san(nn.Module):
         out_i = Variable(torch.ones(batch_size,self.img_size,1).float().cuda(async=True),**param) # (b,s,1)
         c = F.tanh(torch.bmm(self.affi(q.view(-1,self.lstm_hidden_size)).view(-1,seq_size,self.channel_size),v)) # (b, l, h) dot (h,c) dot (b,c,s) -> (b, l, s)
 
-        ##TODO reshuffle the tensor to reduce computation
-        out_i = out_i.expand(batch_size,self.img_size,self.channel_size)*v.transpose(1,2)
-        out_i = self.linear_i(out_i.view(-1,self.channel_size)).view(-1,self.feat_hidden_size,self.img_size) # (b, c, s) * (b, c, s) and (b, c, s) dot (k, c) -> (b,k,s)
-        out_q = out_q.expand(batch_size,seq_size,self.lstm_hidden_size)*q
-        out_q = self.linear_q(out_q.view(-1,self.lstm_hidden_size)).view(-1,self.feat_hidden_size,seq_size) # (b, h, l) * (b, h, l) and (b, h, l) dot (k, h ) -> (b,k,l)
-        h_i = F.tanh(out_i + torch.bmm(out_q,c)) # (b, k, s)
-        h_q = F.tanh(out_q + torch.bmm(out_i,c.transpose(1,2))) #(b, k, l)
-        out_q = h_q
-        out_i = h_i
-        del h_i,h_q
-        out_q = F.softmax(self.att_q(out_q.transpose(1,2)).squeeze()).unsqueeze(2) # (b, l)
-        out_i = F.softmax(self.att_i(out_i.transpose(1,2)).squeeze()).unsqueeze(2) # (b, s)
-
-        if self.stack_size > 1:
+        for i in range(self.stack_size > 1):
             out_i = out_i.expand(batch_size,self.img_size,self.channel_size)*v.transpose(1,2)
             out_i = self.linear_i(out_i.view(-1,self.channel_size)).view(-1,self.feat_hidden_size,self.img_size) # (b, c, s) * (b, c, s) and (b, c, s) dot (k, c) -> (b,k,s)
             out_q = out_q.expand(batch_size,seq_size,self.lstm_hidden_size)*q
