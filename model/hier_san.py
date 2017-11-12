@@ -65,8 +65,8 @@ class hier_san(nn.Module):
             a_q = self.att_q(h_q.transpose(1,2).contiguous().view(-1, self.feat_hidden_size)).view(-1,seq_size,1) # (b, l)
             a_i = self.att_i(h_i.transpose(1,2).contiguous().view(-1, self.feat_hidden_size)).view(-1,self.img_size,1) # (b, s)
 
-        q_star = torch.bmm(q,a_q.unsqueeze(2)).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
-        i_star = torch.bmm(v,a_i.unsqueeze(2)).squeeze()
+        q_star = torch.bmm(q,a_q).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
+        i_star = torch.bmm(v,a_i).squeeze()
 
         out = self.out_nonlinear(self.out_linear(torch.cat([q_star,i_star],1)))
 
