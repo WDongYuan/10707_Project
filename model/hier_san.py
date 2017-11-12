@@ -1,7 +1,7 @@
 import torch
-import torch.nn
+import torch.nn as nn
 import torch.nn.functional as F
-import torch.autograd.Variable as Variable
+from torch.autograd import Variable
 
 class hier_san(nn.Module):
     def __init__(self,stack_size,vocab_size,ans_size,embed_size,lstm_hidden_size,channel_size,loc_size,seq_size,feat_hidden_size):
@@ -26,7 +26,7 @@ class hier_san(nn.Module):
         )
         self.att_q = nn.Sequential(
             nn.Linear(feat_hidden_size,1,bias = False),
-            nn.SoftMax
+            nn.SoftMax()
         )
         self.feat_hidden_size = feat_hidden_size
         self.seq_size = seq_size
