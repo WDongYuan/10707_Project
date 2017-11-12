@@ -1,5 +1,6 @@
 from model import baseline
 from model import relational_network_model
+from model import hier_san
 import sys
 sys.path.append('./util')
 import data
@@ -25,8 +26,16 @@ if __name__=="__main__":
     training,train_dict_size = data.get_loader(train=True,full_batch = False)
     val,val_dict_size = data.get_loader(val=True,full_batch= False)
 
-    model = relational_network_model.RelationalNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
-            config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,config.g_mlp_hidden_size,config.relation_length)
+    model = hier_san.hier_san(config.stack_size,
+                                train_dict_size,
+                                config.max_answers,
+                                config.word_embed_dim,
+                                config.lstm_hidden_size,
+                                config.image_embed_dim,
+                                config.output_size,
+                                config.max_length,
+                                config.feat_hidden_size,
+                                )
     if len(sys.argv) == 4:
         model = torch.load(sys.argv[3])
     if int(sys.argv[1]) == 2:    
