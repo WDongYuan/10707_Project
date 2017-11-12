@@ -18,6 +18,7 @@ import os
 import config
 import torch.nn as nn
 from datetime import datetime
+import pdb
 
 if __name__=="__main__":
     train = True
@@ -86,6 +87,7 @@ if __name__=="__main__":
             batch_loss += loss.data[0]
             acc = utils.batch_accuracy(o.data,a.data).cpu()
             train_accs.append(acc.view(-1))
+            pdb.set_trace()
         train_acc= torch.cat(train_accs,dim=0).mean()
         print("epoch %s, loss %s, accuracy %s" %(str(i),str(batch_loss/config.batch_size),str(train_acc)))
         torch.save(model,"./curr_model.model")
