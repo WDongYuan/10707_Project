@@ -45,6 +45,7 @@ class hier_san(nn.Module):
         q = torch.nn.utils.rnn.pack_padded_sequence(q, list(q_length.data.type(torch.LongTensor)), batch_first=True)
         self.question_lstm.flatten_parameters()
         q, (q_h_t,q_c_t) = self.question_lstm(q,(q_h_0,q_c_0)) # (b, l, h)
+        del q_h_t,q_c_t
         q, _ = torch.nn.utils.rnn.pad_packed_sequence(q, batch_first=True)
         _,seq_size,_ = q.size()
         q = q.transpose(1,2).contiguous() # (b, h, l)
@@ -56,19 +57,19 @@ class hier_san(nn.Module):
 
         ##TODO reshuffle the tensor to reduce computation
         for i in range(self.stack_size):
-            a_and_i = a_i.expand(batch_size,self.img_size,self.channel_size)*(v.transpose(1,2).contiguous())
-            w_i_i = self.linear_i(a_and_i.view(-1,self.channel_size)).view(-1,self.feat_hidden_size,self.img_size) # (b, c, s) * (b, c, s) and (b, c, s) dot (k, c) -> (b,k,s)
-            a_and_q = a_q.expand(batch_size,seq_size,self.lstm_hidden_size)*(q.transpose(1,2).contiguous())
-            w_q_q =self.linear_q(a_and_q.view(-1,self.lstm_hidden_size)).view(-1,self.feat_hidden_size,seq_size) # (b, h, l) * (b, h, l) and (b, h, l) dot (k, h ) -> (b,k,l)
-            h_i = F.tanh(w_i_i + torch.bmm(w_q_q,c)) # (b, k, s)
-            h_q = F.tanh(w_q_q + torch.bmm(w_i_i,c.transpose(1,2).contiguous())) #(b, k, l)
+            out_i = a_i.expand(batch_size,self.img_size,self.channel_size)*(v.transpose(1,2).contiguous())
+            out_i = self.linear_i(out_i.view(-1,self.channel_size)).view(-1,self.feat_hidden_size,self.img_size) # (b, c, s) * (b, c, s) and (b, c, s) dot (k, c) -> (b,k,s)
+            out_q = a_q.expand(batch_size,seq_size,self.lstm_hidden_size)*(q.transpose(1,2).contiguous())
+            out_q = self.linear_q(out_q.view(-1,self.lstm_hidden_size)).view(-1,self.feat_hidden_size,seq_size) # (b, h, l) * (b, h, l) and (b, h, l) dot (k, h ) -> (b,k,l)
+            h_i = F.tanh(out_i + torch.bmm(out_q,c)) # (b, k, s)
+            h_q = F.tanh(out_q + torch.bmm(out_i,c.transpose(1,2).contiguous())) #(b, k, l)
             a_q = self.att_q(h_q.transpose(1,2).contiguous().view(-1, self.feat_hidden_size)).view(-1,seq_size,1) # (b, l)
             a_i = self.att_i(h_i.transpose(1,2).contiguous().view(-1, self.feat_hidden_size)).view(-1,self.img_size,1) # (b, s)
 
-        q_star = torch.bmm(q,a_q).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
-        i_star = torch.bmm(v,a_i).squeeze()
+        out_i = torch.bmm(q,a_q).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
+        out_q = torch.bmm(v,a_i).squeeze()
 
-        out = self.out_nonlinear(self.out_linear(torch.cat([q_star,i_star],1)))
+        out = self.out_nonlinear(self.out_linear(torch.cat([out_q,out_i],1)))
 
         return out
 
