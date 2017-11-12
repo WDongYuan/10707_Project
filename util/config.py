@@ -35,3 +35,4 @@ decay_size = 0.5
 stack_size = 2
 feat_hidden_size = 512
 max_length = 23
+lstm_hidden_size = 512
