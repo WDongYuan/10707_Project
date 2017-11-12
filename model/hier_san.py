@@ -61,7 +61,7 @@ class hier_san(nn.Module):
             a_and_q = a_q.expand(batch_size,seq_size,self.lstm_hidden_size)*(q.transpose(1,2).contiguous())
             w_q_q =self.linear_q(a_and_q.view(-1,self.lstm_hidden_size)).view(-1,self.feat_hidden_size,seq_size) # (b, h, l) * (b, h, l) and (b, h, l) dot (k, h ) -> (b,k,l)
             h_i = F.tanh(w_i_i + torch.bmm(w_q_q,c)) # (b, k, s)
-            h_q = F.tanh(w_q_q + torch.bmm(w_i_i,c.transpose(0,1).contiguous())) #(b, k, l)
+            h_q = F.tanh(w_q_q + torch.bmm(w_i_i,c.transpose(1,2).contiguous())) #(b, k, l)
             a_q = self.att_q(h_q.transpose(1,2).contiguous().view(-1, self.feat_hidden_size)).view(-1,seq_size) # (b, l)
             a_i = self.att_i(h_i.transpose(1,2).contiguous().view(-1, self.feat_hidden_size)).view(-1,self.img_size) # (b, s)
 
