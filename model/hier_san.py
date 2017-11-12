@@ -13,8 +13,8 @@ class hier_san(nn.Module):
         self.out_nonlinear = nn.LogSoftmax()
         self.out_linear = nn.Linear(lstm_hidden_size + channel_size,ans_size)
         self.lstm_layer = 1
-		self.bidirectional_flag = False
-		self.direction = 2 if self.bidirectional_flag else 1
+        self.bidirectional_flag = False
+        self.direction = 2 if self.bidirectional_flag else 1
         self.question_lstm = nn.LSTM(embed_size, lstm_hidden_size,
 									num_layers=self.lstm_layer,bidirectional=self.bidirectional_flag,batch_first=True)
         self.affi = Variable(torch.Tensor(channel_size,lstm_hidden_size))
@@ -34,13 +34,13 @@ class hier_san(nn.Module):
 
     def forward(self,q,v,q_length,param):
         q_c_0 = self.init_hidden(param)
-		q_h_0 = self.init_hidden(param)
+        q_h_0 = self.init_hidden(param)
 
         #LSTM 
         embedding = self.embed(q)
         pack_sent = torch.nn.utils.rnn.pack_padded_sequence(embedding, list(q_length.data.type(torch.LongTensor)), batch_first=True)
-		self.question_lstm.flatten_parameters()
-		q_h_n, (q_h_t,q_c_t) = self.question_lstm(pack_sent,(q_h_0,q_c_0))
+        self.question_lstm.flatten_parameters()
+        q_h_n, (q_h_t,q_c_t) = self.question_lstm(pack_sent,(q_h_0,q_c_0))
 
         #ATT
         a_q = Variable(torch.ones(1,self.seq_size))
@@ -63,7 +63,7 @@ class hier_san(nn.Module):
         return out
 
     def init_hidden(self,param):
-		direction = 2 if self.bidirectional_flag else 1
-		return autograd.Variable(torch.rand(self.lstm_layer*direction,self.batch_size,self.lstm_hidden_size).cuda(async=True),**param)
+        direction = 2 if self.bidirectional_flag else 1
+        return autograd.Variable(torch.rand(self.lstm_layer*direction,self.batch_size,self.lstm_hidden_size).cuda(async=True),**param)
 
 
