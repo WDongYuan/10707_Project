@@ -34,8 +34,7 @@ class hier_san(nn.Module):
         self.img_size = loc_size * loc_size
 
     def forward(self,q,v,q_length,param):
-        print(v.size())
-        batch_size ,_,_ = v.size()
+        batch_size ,_,_,_ = v.size()
         q_c_0 = self.init_hidden(param)
         q_h_0 = self.init_hidden(param)
 
