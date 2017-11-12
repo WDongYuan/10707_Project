@@ -76,8 +76,8 @@ class hier_san(nn.Module):
 
         print(q.size())
         print(out_i.size())
-        out_i = torch.bmm(q.transpose(1,2),out_i).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
-        out_q = torch.bmm(v,out_q).squeeze()
+        out_i = torch.bmm(q.transpose(1,2),out_q).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
+        out_q = torch.bmm(v,out_i).squeeze()
 
         out = self.out_nonlinear(self.out_linear(torch.cat([out_q,out_i],1)))
 
