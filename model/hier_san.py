@@ -21,14 +21,8 @@ class hier_san(nn.Module):
         self.affi = nn.Linear(lstm_hidden_size,channel_size,bias=False)
         self.linear_i = nn.Linear(channel_size,feat_hidden_size,bias = False)
         self.linear_q = nn.Linear(lstm_hidden_size,feat_hidden_size,bias = False)
-        self.att_i = nn.Sequential(
-            nn.Linear(feat_hidden_size,1,bias = False),
-            nn.Softmax()
-        )
-        self.att_q = nn.Sequential(
-            nn.Linear(feat_hidden_size,1,bias = False),
-            nn.Softmax()
-        )
+        self.att_i = nn.Linear(feat_hidden_size,1,bias = False)
+        self.att_q = nn.Linear(feat_hidden_size,1,bias = False)
         self.feat_hidden_size = feat_hidden_size
         self.img_size = loc_size * loc_size
         self.channel_size = channel_size
@@ -50,7 +44,7 @@ class hier_san(nn.Module):
         _,seq_size,_ = q.size()
         #q = q.transpose(1,2).contiguous() # (b, h, l)
         q=q.contiguous()
-        
+
         #ATT
         a_q = Variable(torch.ones(batch_size,seq_size,1).float().cuda(async=True),**param) # (b,l,1)
         a_i = Variable(torch.ones(batch_size,self.img_size,1).float().cuda(async=True),**param) # (b,s,1)
@@ -64,8 +58,8 @@ class hier_san(nn.Module):
             out_q = self.linear_q(out_q.view(-1,self.lstm_hidden_size)).view(-1,self.feat_hidden_size,seq_size) # (b, h, l) * (b, h, l) and (b, h, l) dot (k, h ) -> (b,k,l)
             h_i = F.tanh(out_i + torch.bmm(out_q,c)) # (b, k, s)
             h_q = F.tanh(out_q + torch.bmm(out_i,c.transpose(1,2))) #(b, k, l)
-            a_q = self.att_q(h_q.transpose(1,2)) # (b, l)
-            a_i = self.att_i(h_i.transpose(1,2)) # (b, s)
+            a_q = F.softmax(self.att_q(h_q.transpose(1,2)).squeeze()) # (b, l)
+            a_i = F.softmax(self.att_i(h_i.transpose(1,2)).squeeze()) # (b, s)
 
         out_i = torch.bmm(q.transpose(1,2),a_q).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
         out_q = torch.bmm(v,a_i).squeeze()
