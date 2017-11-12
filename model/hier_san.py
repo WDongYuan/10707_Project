@@ -6,7 +6,7 @@ from torch.autograd import Variable
 class hier_san(nn.Module):
     def __init__(self,stack_size,vocab_size,ans_size,embed_size,lstm_hidden_size,channel_size,loc_size,seq_size,feat_hidden_size):
         super(fusion_san,self).__init__()
-        self.embed = vocab_size
+        self.embed = nn.Embedding(vocab_size, embed_size,padding_idx=0)
         self.stack_size = vocab_size
         self.embed_size = embed_size
         self.lstm_hidden_size = lstm_hidden_size
@@ -17,7 +17,8 @@ class hier_san(nn.Module):
         self.direction = 2 if self.bidirectional_flag else 1
         self.question_lstm = nn.LSTM(embed_size, lstm_hidden_size,
                                     num_layers=self.lstm_layer,bidirectional=self.bidirectional_flag,batch_first=True)
-        self.affi = Variable(torch.Tensor(channel_size,lstm_hidden_size))
+        ##TODO change the bmm to linear
+        self.affi = nn.Linear(lstm_hidden_size,channel_size,bias=False)
         self.linear_i = nn.Linear(channel_size,feat_hidden_size,bias = False)
         self.linear_q = nn.Linear(lstm_hidden_size,feat_hidden_size,bias = False)
         self.att_i = nn.Sequential(
@@ -33,30 +34,36 @@ class hier_san(nn.Module):
         self.img_size = loc_size * loc_size
 
     def forward(self,q,v,q_length,param):
+        batch_size ,_,_ = v.size()
         q_c_0 = self.init_hidden(param)
         q_h_0 = self.init_hidden(param)
 
+        v = v.view(-1,self.channel_size,img_size) # (b, c, s)
         #LSTM 
-        embedding = self.embed(q)
-        pack_sent = torch.nn.utils.rnn.pack_padded_sequence(embedding, list(q_length.data.type(torch.LongTensor)), batch_first=True)
+        q = self.embed(q)
+        q = torch.nn.utils.rnn.pack_padded_sequence(q, list(q_length.data.type(torch.LongTensor)), batch_first=True)
         self.question_lstm.flatten_parameters()
-        q_h_n, (q_h_t,q_c_t) = self.question_lstm(pack_sent,(q_h_0,q_c_0))
+        q, (q_h_t,q_c_t) = self.question_lstm(q,(q_h_0,q_c_0)) # (b, l, h)
+        q = q.transpose(1,2) # (b, h, l)
 
         #ATT
-        a_q = Variable(torch.ones(1,self.seq_size))
-        a_i = Variable(torch.ones(1,self.img_size))
-        c = F.tanh(torch.bmm(torch.bmm(q_h_n.transpose(),self.affi),v))
+        a_q = Variable(torch.ones(batch_size,self.seq_size,1)) # (b,l,1)
+        a_i = Variable(torch.ones(batch_size,self.img_size,1)) # (b,s,1)
+        c = F.tanh(torch.bmm(self.affi(q.view(-1,self.lstm_hidden_size)).view(-1,self.seq_size,self.channel_size),v)) # (b, l, h) dot (h,c) dot (b,c,s) -> (b, l, s)
 
+        ##TODO reshuffle the tensor to reduce computation
         for i in range(self.stack_size):
-            w_i_v =self.linear_i(a_i.expand(self.channel_size,self.img_size))
-            w_q_q =self.linear_q(q_i.expand(self.lstm_hidden_size,self.seq_size))
-            h_i = F.tanh(w_i_v + torch.bmm(w_q_q,c))
-            h_q = F.tanh(w_q_q + torch.bmm(w_i_v,c.transpose()))
-            a_q = self.att_q(h_q)
-            a_i = self.att_i(h_i)
+            a_and_i = a_i.expand(self.channel_size,self.img_size)*v
+            w_i_i = self.linear_i(a_and_i.transpose(1,2).view(-1,self.channel_size)).view(-1,self.feat_hidden_size,self.img_size) # (b, c, s) * (b, c, s) and (b, c, s) dot (k, c) -> (b,k,s)
+            a_and_q = q_i.expand(self.lstm_hidden_size,self.seq_size)*q
+            w_q_q =self.linear_q(a_and_q.transpose(1,2).view(-1,self.lstm_hidden_size)).view(-1,self.feat_hidden_size,self.seq_size) # (b, h, l) * (b, h, l) and (b, h, l) dot (k, h ) -> (b,k,l)
+            h_i = F.tanh(w_i_i + torch.bmm(w_q_q,c)) # (b, k, s)
+            h_q = F.tanh(w_q_q + torch.bmm(w_i_i,c.transpose(0,1))) #(b, k, l)
+            a_q = self.att_q(h_q.transpose(1,2).view(-1, self.feat_hidden_size)).view(-1,self.seq_size) # (b, l)
+            a_i = self.att_i(h_i.transpose(1,2).view(-1, self.feat_hidden_size)).view(-1,self.img_size) # (b, s)
 
-        q_star = torch.bmm(a_q,q_h_n)
-        i_star = torch.bmm(a_i,v)
+        q_star = torch.bmm(q,a_q.unsqueeze(2)).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
+        i_star = torch.bmm(v,q_i.unsqueeze(2)).squeeze()
 
         out = self.out_nonlinear(self.out_linear(torch.cat([q_star,i_star],1)))
 
