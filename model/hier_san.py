@@ -23,11 +23,11 @@ class hier_san(nn.Module):
         self.linear_q = nn.Linear(lstm_hidden_size,feat_hidden_size,bias = False)
         self.att_i = nn.Sequential(
             nn.Linear(feat_hidden_size,1,bias = False),
-            nn.SoftMax()
+            nn.Softmax()
         )
         self.att_q = nn.Sequential(
             nn.Linear(feat_hidden_size,1,bias = False),
-            nn.SoftMax()
+            nn.Softmax()
         )
         self.feat_hidden_size = feat_hidden_size
         self.seq_size = seq_size
