@@ -53,7 +53,7 @@ class hier_san(nn.Module):
         #ATT
         a_q = Variable(torch.ones(batch_size,self.seq_size,1)) # (b,l,1)
         a_i = Variable(torch.ones(batch_size,self.img_size,1)) # (b,s,1)
-        c = F.tanh(torch.bmm(self.affi(q.view(-1,self.lstm_hidden_size)).view(-1,self.seq_size,self.channel_size),v)) # (b, l, h) dot (h,c) dot (b,c,s) -> (b, l, s)
+        c = F.tanh(torch.bmm(self.affi(q.transpose(1,2).contiguous().view(-1,self.lstm_hidden_size)).view(-1,self.seq_size,self.channel_size),v)) # (b, l, h) dot (h,c) dot (b,c,s) -> (b, l, s)
 
         ##TODO reshuffle the tensor to reduce computation
         for i in range(self.stack_size):
