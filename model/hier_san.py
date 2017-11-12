@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
-
+import torch.autograd as autograd
 class hier_san(nn.Module):
     def __init__(self,stack_size,vocab_size,ans_size,embed_size,lstm_hidden_size,channel_size,loc_size,seq_size,feat_hidden_size):
         super(hier_san,self).__init__()
