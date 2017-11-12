@@ -50,8 +50,8 @@ class hier_san(nn.Module):
         q = q.transpose(1,2).contiguous() # (b, h, l)
 
         #ATT
-        a_q = Variable(torch.ones(batch_size,seq_size,1).float()) # (b,l,1)
-        a_i = Variable(torch.ones(batch_size,self.img_size,1).float()) # (b,s,1)
+        a_q = Variable(torch.ones(batch_size,seq_size,1).float()).cuda() # (b,l,1)
+        a_i = Variable(torch.ones(batch_size,self.img_size,1).float()).cuda() # (b,s,1)
         c = F.tanh(torch.bmm(self.affi(q.transpose(1,2).contiguous().view(-1,self.lstm_hidden_size)).view(-1,seq_size,self.channel_size),v)) # (b, l, h) dot (h,c) dot (b,c,s) -> (b, l, s)
 
         ##TODO reshuffle the tensor to reduce computation
