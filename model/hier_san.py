@@ -48,7 +48,7 @@ class hier_san(nn.Module):
         q, (q_h_t,q_c_t) = self.question_lstm(q,(q_h_0,q_c_0)) # (b, l, h)
         q, _ = torch.nn.utils.rnn.pad_packed_sequence(q, batch_first=True)
         q = q.transpose(1,2).contiguous() # (b, h, l)
-
+        print(q.size())
 
         #ATT
         a_q = Variable(torch.ones(batch_size,self.seq_size,1)) # (b,l,1)
