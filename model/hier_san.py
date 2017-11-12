@@ -16,7 +16,7 @@ class hier_san(nn.Module):
         self.bidirectional_flag = False
         self.direction = 2 if self.bidirectional_flag else 1
         self.question_lstm = nn.LSTM(embed_size, lstm_hidden_size,
-									num_layers=self.lstm_layer,bidirectional=self.bidirectional_flag,batch_first=True)
+                                    num_layers=self.lstm_layer,bidirectional=self.bidirectional_flag,batch_first=True)
         self.affi = Variable(torch.Tensor(channel_size,lstm_hidden_size))
         self.linear_i = nn.Linear(channel_size,feat_hidden_size,bias = False)
         self.linear_q = nn.Linear(lstm_hidden_size,feat_hidden_size,bias = False)
