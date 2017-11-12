@@ -36,7 +36,7 @@ class hier_san(nn.Module):
         v = v.view(-1,self.channel_size,self.img_size) # (b, c, s)
         #LSTM 
         q = self.embed(q)
-        q = torch.nn.utils.rnn.pack_padded_sequence(q, list(q_length.type(torch.LongTensor)), batch_first=True)
+        q = torch.nn.utils.rnn.pack_padded_sequence(q, list(q_length.data.type(torch.LongTensor)), batch_first=True)
         self.question_lstm.flatten_parameters()
         q, (q_h_t,q_c_t) = self.question_lstm(q,(q_h_0,q_c_0)) # (b, l, h)
         q, _ = torch.nn.utils.rnn.pad_packed_sequence(q, batch_first=True)
