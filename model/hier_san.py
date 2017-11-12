@@ -32,6 +32,7 @@ class hier_san(nn.Module):
         self.feat_hidden_size = feat_hidden_size
         self.seq_size = seq_size
         self.img_size = loc_size * loc_size
+        self.channel_size = channel_size
 
     def forward(self,q,v,q_length,param):
         batch_size ,_,_,_ = v.size()
