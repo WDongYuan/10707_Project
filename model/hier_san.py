@@ -35,6 +35,7 @@ class hier_san(nn.Module):
 
     def forward(self,q,v,q_length,param):
         batch_size ,_,_,_ = v.size()
+        self.batch_size = batch_size
         q_c_0 = self.init_hidden(param)
         q_h_0 = self.init_hidden(param)
 
