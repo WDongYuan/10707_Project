@@ -50,15 +50,15 @@ class hier_san(nn.Module):
         q = q.transpose(1,2).contiguous() # (b, h, l)
 
         #ATT
-        a_q = Variable(torch.ones(batch_size,seq_size,1).float()).cuda() # (b,l,1)
-        a_i = Variable(torch.ones(batch_size,self.img_size,1).float()).cuda() # (b,s,1)
+        a_q = Variable(torch.ones(batch_size,seq_size,1).float()).cuda(async=True,**param) # (b,l,1)
+        a_i = Variable(torch.ones(batch_size,self.img_size,1).float()).cuda(async=True,**param) # (b,s,1)
         c = F.tanh(torch.bmm(self.affi(q.transpose(1,2).contiguous().view(-1,self.lstm_hidden_size)).view(-1,seq_size,self.channel_size),v)) # (b, l, h) dot (h,c) dot (b,c,s) -> (b, l, s)
 
         ##TODO reshuffle the tensor to reduce computation
         for i in range(self.stack_size):
             a_and_i = a_i.expand(batch_size,self.img_size,self.channel_size)*(v.transpose(1,2).contiguous())
             w_i_i = self.linear_i(a_and_i.view(-1,self.channel_size)).view(-1,self.feat_hidden_size,self.img_size) # (b, c, s) * (b, c, s) and (b, c, s) dot (k, c) -> (b,k,s)
-            a_and_q = q_i.expand(batch_size,seq_size,self.lstm_hidden_size)*(q.transpose(1,2).contiguous())
+            a_and_q = a_q.expand(batch_size,seq_size,self.lstm_hidden_size)*(q.transpose(1,2).contiguous())
             w_q_q =self.linear_q(a_and_qview(-1,self.lstm_hidden_size)).view(-1,self.feat_hidden_size,seq_size) # (b, h, l) * (b, h, l) and (b, h, l) dot (k, h ) -> (b,k,l)
             h_i = F.tanh(w_i_i + torch.bmm(w_q_q,c)) # (b, k, s)
             h_q = F.tanh(w_q_q + torch.bmm(w_i_i,c.transpose(0,1).contiguous())) #(b, k, l)
@@ -66,7 +66,7 @@ class hier_san(nn.Module):
             a_i = self.att_i(h_i.transpose(1,2).contiguous().view(-1, self.feat_hidden_size)).view(-1,self.img_size) # (b, s)
 
         q_star = torch.bmm(q,a_q.unsqueeze(2)).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
-        i_star = torch.bmm(v,q_i.unsqueeze(2)).squeeze()
+        i_star = torch.bmm(v,a_i.unsqueeze(2)).squeeze()
 
         out = self.out_nonlinear(self.out_linear(torch.cat([q_star,i_star],1)))
 
