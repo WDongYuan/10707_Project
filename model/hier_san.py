@@ -5,7 +5,7 @@ from torch.autograd import Variable
 
 class hier_san(nn.Module):
     def __init__(self,stack_size,vocab_size,ans_size,embed_size,lstm_hidden_size,channel_size,loc_size,seq_size,feat_hidden_size):
-        super(fusion_san,self).__init__()
+        super(hier_san,self).__init__()
         self.embed = nn.Embedding(vocab_size, embed_size,padding_idx=0)
         self.stack_size = vocab_size
         self.embed_size = embed_size
