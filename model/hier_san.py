@@ -49,7 +49,8 @@ class hier_san(nn.Module):
         q, _ = torch.nn.utils.rnn.pad_packed_sequence(q, batch_first=True)
         _,seq_size,_ = q.size()
         #q = q.transpose(1,2).contiguous() # (b, h, l)
-
+        print(q.is_contiguous())
+        print(v.is_contiguous())
         #ATT
         a_q = Variable(torch.ones(batch_size,seq_size,1).float().cuda(async=True),**param) # (b,l,1)
         a_i = Variable(torch.ones(batch_size,self.img_size,1).float().cuda(async=True),**param) # (b,s,1)
