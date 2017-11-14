@@ -1,5 +1,6 @@
 from model import baseline
 from model import relational_network_model
+from model import stacked_att
 import sys
 sys.path.append('./util')
 import data
@@ -30,8 +31,14 @@ if __name__=="__main__":
     val,val_dict_size = training,train_dict_size
     #########################################################################
 
-    model = relational_network_model.RelationalNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
-            config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,config.g_mlp_hidden_size,config.relation_length)
+    #########################################################################
+    # model = relational_network_model.RelationalNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
+    #         config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,config.g_mlp_hidden_size,config.relation_length)
+    #########################################################################
+    feature_size = 100
+    model = stacked_att.StackAttNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
+            config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,feature_size)
+    #########################################################################
     lr = float(sys.argv[2])
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = lr)
 

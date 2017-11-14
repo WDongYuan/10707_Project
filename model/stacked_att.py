@@ -8,7 +8,7 @@ import torch.backends.cudnn as cudnn
 from torch.nn.init import kaiming_uniform
 
 class StackAttNetwork(nn.Module):
-	def __init__(self,voc_size,word_embedding_size,map_c,map_w,map_h,out_c,
+	def __init__(self,voc_size,word_embedding_size,map_c,out_c,map_w,map_h,
 		answer_voc_size,lstm_hidden_size,feature_size):
 		
 		super(StackAttNetwork, self).__init__()
