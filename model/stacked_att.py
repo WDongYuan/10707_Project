@@ -113,7 +113,7 @@ class Attention(nn.Module):
 		self.linear_h = nn.Linear(self.feature_size,1)
 		self.softmax = nn.Softmax()
 
-	def forward(vi,vq):
+	def forward(self,vi,vq):
 		self.batch_size,_ = vq.size()
 		vi = vi.view(self.batch_size*self.img_space,self.convert_c)
 		ha = self.tanh(self.linear_i(vi).view(self.batch_size,self.img_space,self.feature_size)+
