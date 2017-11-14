@@ -57,7 +57,7 @@ class StackAttNetwork(nn.Module):
 
 		##Map to answer space
 		self.linear_u = nn.Linear(self.new_lstm_hidden_size,self.answer_voc_size)
-		self.softmax = nn.Softmax()
+		self.log_softmax = nn.LogSoftmax()
 
 	def forward(self,q,img,sents_lengths,param):
 		batch_size,_ = q.size()
@@ -90,7 +90,8 @@ class StackAttNetwork(nn.Module):
 		u = vi_tilde+u
 
 		##Generate answer
-		ans_prob = self.softmax(self.linear_u(u))
+		print(u.size())
+		ans_prob = self.log_softmax(self.linear_u(u))
 		return ans_prob
 
 	def init_hidden(self,param):
