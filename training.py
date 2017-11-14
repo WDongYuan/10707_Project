@@ -70,7 +70,7 @@ if __name__=="__main__":
         train_accs = []
         print(datetime.now())
         model.train()
-        start_time = time()
+        start_time = time.time()
         sample_counter = 0
         for v,q,a,item,q_len in training:
             q = Variable(q.cuda(async=True),**var_params)
