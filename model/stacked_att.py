@@ -90,7 +90,7 @@ class StackAttNetwork(nn.Module):
 		u = vi_tilde+u
 
 		##Generate answer
-		print(u.size())
+		# print(u.size())
 		ans_prob = self.log_softmax(self.linear_u(u))
 		return ans_prob
 
@@ -120,7 +120,7 @@ class Attention(nn.Module):
 		ha = self.tanh(self.linear_i(vi).view(self.batch_size,self.img_space,self.feature_size)+
 			self.linear_q(vq).unsqueeze(1).expand(self.batch_size,self.img_space,self.feature_size))
 		ha = ha.view(-1,self.feature_size)
-		pi = self.softmax(self.linear_h(ha).view(self.batch_size,1,self.img_space))
+		pi = self.softmax(self.linear_h(ha).view(self.batch_size,self.img_space)).unsqueeze(1)
 		vi_tilde = torch.bmm(pi,vi.view(self.batch_size,self.img_space,self.convert_c)).squeeze()
 
 		return vi_tilde
