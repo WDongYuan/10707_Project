@@ -63,10 +63,10 @@ class RelationalNetwork(nn.Module):
 
 
 		for layer in self.modules():
-            if isinstance(layer, nn.Linear) or isinstance(layer, nn.Conv2d):
-                kaiming_uniform(layer.weight)
-                if layer.bias is not None:
-                    layer.bias.data.zero_()
+		if isinstance(layer, nn.Linear) or isinstance(layer, nn.Conv2d):
+			kaiming_uniform(layer.weight)
+			if layer.bias is not None:
+				layer.bias.data.zero_()
 
 	def forward(self,sent_batch,conv_map_batch,sents_lengths,param):
 		batch_size , sentlength = sent_batch.size()
