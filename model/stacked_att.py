@@ -95,7 +95,7 @@ class StackAttNetwork(nn.Module):
 		return autograd.Variable(torch.rand(self.lstm_layer*self.direction,self.batch_size,self.lstm_hidden_size).cuda(async=True),**param)
 
 class Attention(nn.Module):
-	def __init__(lstm_hidden_size,feature_size,convert_c,map_w,map_h):
+	def __init__(self,lstm_hidden_size,feature_size,convert_c,map_w,map_h):
 		super(Attention,self).__init__()
 		self.batch_size = 0
 		self.lstm_hidden_size = lstm_hidden_size
