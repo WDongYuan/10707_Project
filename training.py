@@ -18,6 +18,7 @@ import os
 import config
 import torch.nn as nn
 from datetime import datetime
+import time
 
 if __name__=="__main__":
     train = True
@@ -69,6 +70,8 @@ if __name__=="__main__":
         train_accs = []
         print(datetime.now())
         model.train()
+        start_time = time()
+        sample_counter = 0
         for v,q,a,item,q_len in training:
             q = Variable(q.cuda(async=True),**var_params)
             a = Variable(a.cuda(async=True),**var_params)
@@ -82,6 +85,11 @@ if __name__=="__main__":
             batch_loss += loss.data[0]
             acc = utils.batch_accuracy(o.data,a.data).cpu()
             train_accs.append(acc.view(-1))
+            sample_counter += config.batch_size
+            if sample_counter%10000==0:
+                print(str(sample_counter)+" samples.")
+                print("Time: "+str(time.time()-start_time))
+                print("############################################")
         train_acc= torch.cat(train_accs,dim=0).mean()
         print("epoch %s, loss %s, accuracy %s" %(str(i),str(batch_loss/config.batch_size),str(train_acc)))
         if (i+1)%config.val_interval ==0:
