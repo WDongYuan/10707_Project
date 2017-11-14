@@ -86,7 +86,8 @@ class VQA(data.Dataset):
 
     def _create_coco_id_to_index(self):
         """ Create a mapping from a COCO image id into the corresponding index into the h5 file """
-        with h5py.File(self.image_features_path, 'r',libver='latest',swmr=True) as features_file:
+        # with h5py.File(self.image_features_path, 'r',libver='latest',swmr=True) as features_file:
+        with h5py.File(self.image_features_path, 'r',libver='latest') as features_file:
         #due to h5py multiprocessing problem, we switched to numpy
         #with np.load(self.image_features_path) as features_file:    
             coco_ids = features_file['ids'][()]
@@ -138,7 +139,8 @@ class VQA(data.Dataset):
             # forks for multiple works, every child would use the same file object and fail
             # Having multiple readers using different file objects is fine though, so we just init in here.
             # due to h5py multiprocessing problem, we switched to numpy
-            self.features_file = h5py.File(self.image_features_path,"r",libver='latest', swmr=True)
+            # self.features_file = h5py.File(self.image_features_path,"r",libver='latest', swmr=True)
+            self.features_file = h5py.File(self.image_features_path,"r",libver='latest')
         index = self.coco_id_to_index[image_id]
         dataset = self.features_file['features']
         img = dataset[index].astype('float32')
