@@ -76,6 +76,7 @@ class StackAttNetwork(nn.Module):
 
 		##CNN
 		img = self.conv(img)
+		print(img.size())
 
 		##Convert image dimension to new_lstm_hidden_size
 		img = self.convert_d(img)
