@@ -60,7 +60,6 @@ class hier_san(nn.Module):
             h_q = F.tanh(out_q + torch.bmm(out_i,c.transpose(1,2))) #(b, k, l)
             out_q = h_q
             out_i = h_i
-            del h_i,h_q
             out_q = F.softmax(self.att_q(out_q.transpose(1,2)).squeeze()).unsqueeze(2) # (b, l)
             out_i = F.softmax(self.att_i(out_i.transpose(1,2)).squeeze()).unsqueeze(2) # (b, s)
 
