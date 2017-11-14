@@ -22,8 +22,13 @@ if __name__=="__main__":
     train = True
     cudnn.benchmark = True
     torch.backends.cudnn.enabled = True
-    training,train_dict_size = data.get_loader(train=True,full_batch = False)
-    val,val_dict_size = data.get_loader(val=True,full_batch= False)
+    #########################################################################
+    # training,train_dict_size = data.get_loader(train=True,full_batch = False)
+    # val,val_dict_size = data.get_loader(val=True,full_batch= False)
+    #########################################################################
+    training,train_dict_size = data.get_loader(val=True,full_batch = False)
+    val,val_dict_size = training,train_dict_size
+    #########################################################################
 
     model = relational_network_model.RelationalNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
             config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,config.g_mlp_hidden_size,config.relation_length)
