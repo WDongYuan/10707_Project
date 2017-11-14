@@ -76,7 +76,7 @@ class StackAttNetwork(nn.Module):
 
 		##CNN
 		img = self.conv(img)
-		img = img.permute(0,2,3,1).view(batch_size,self.map_h*self.map_h,self.out_c)
+		img = img.permute(0,2,3,1).contiguous().view(batch_size,self.map_h*self.map_h,self.out_c)
 		# print(img.size())
 
 		##Convert image dimension to new_lstm_hidden_size
