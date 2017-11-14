@@ -86,7 +86,7 @@ if __name__=="__main__":
             acc = utils.batch_accuracy(o.data,a.data).cpu()
             train_accs.append(acc.view(-1))
             sample_counter += config.batch_size
-            if sample_counter%10000==0:
+            if sample_counter%5000==0:
                 print(str(sample_counter)+" samples.")
                 print("Time: "+str(time.time()-start_time))
                 print("############################################")
