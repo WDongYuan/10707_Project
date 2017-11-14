@@ -84,9 +84,9 @@ class StackAttNetwork(nn.Module):
 
 		##Attention
 		u = vq
-		vi_tilde = self.att_1(img,u)
+		vi_tilde = self.att1(img,u)
 		u = vi_tilde+u
-		vi_tilde = self.att_2(img,u)
+		vi_tilde = self.att2(img,u)
 		u = vi_tilde+u
 
 		##Generate answer
