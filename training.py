@@ -44,13 +44,13 @@ if __name__=="__main__":
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
         model.cuda()
     lr = float(sys.argv[2])
-    #embed_params = list(map(id, model.embed.parameters()))
-    #base_params = filter(lambda p: id(p) not in embed_params,model.parameters())
-    # optimizer = optim.RMSprop([
-    #                         {'params':model.embed.parameters(),'lr': config.initial_embed_lr},
-    #                         {'params':base_params}
-    #                         ],lr = lr)
-    optimizer = optim.RMSprop([p for p in model.parameters() if p.requires_grad],lr = lr)
+    embed_params = list(map(id, model.embed.parameters()))
+    base_params = filter(lambda p: id(p) not in embed_params,model.parameters())
+    optimizer = optim.RMSprop([
+                            {'params':model.embed.parameters(),'lr': config.initial_embed_lr},
+                            {'params':base_params}
+                            ],lr = lr)
+    #optimizer = optim.RMSprop([p for p in model.parameters() if p.requires_grad],lr = lr)
 
     best_perf = 0.0
     
@@ -66,7 +66,7 @@ if __name__=="__main__":
 
     print("data is fully loaded")
     print("lr"+str(lr))
-    #print("embedding lr"+str(config.initial_embed_lr))
+    print("embedding lr"+str(config.initial_embed_lr))
     #print("decay step %s, size %s" %(str(config.decay_step),str(config.decay_size)))
     for i in tqdm(range(config.epochs)):
         #lr_scheduler.step()

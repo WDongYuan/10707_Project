@@ -19,10 +19,10 @@ class hier_san(nn.Module):
                                     num_layers=self.lstm_layer,bidirectional=self.bidirectional_flag,batch_first=True)
         ##TODO change the bmm to linear
         self.affi = nn.Linear(lstm_hidden_size,channel_size,bias=False)
-        self.linear_i = nn.Linear(channel_size,feat_hidden_size,bias = False)
-        self.linear_q = nn.Linear(lstm_hidden_size,feat_hidden_size,bias = False)
-        self.att_i = nn.Linear(feat_hidden_size,1,bias = False)
-        self.att_q = nn.Linear(feat_hidden_size,1,bias = False)
+        self.linear_i = nn.Linear(channel_size,feat_hidden_size)
+        self.linear_q = nn.Linear(lstm_hidden_size,feat_hidden_size)
+        self.att_i = nn.Linear(feat_hidden_size,1)
+        self.att_q = nn.Linear(feat_hidden_size,1)
         self.feat_hidden_size = feat_hidden_size
         self.img_size = loc_size * loc_size
         self.channel_size = channel_size
