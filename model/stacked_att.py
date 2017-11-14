@@ -41,7 +41,7 @@ class StackAttNetwork(nn.Module):
 		self.padding_size = (self.kernel_size-1) // 2
 		self.stride = 1
 		self.conv = nn.Sequential(
-			nn.Conv2d(in_channel,out_channel,(self.kernel_size,self.kernel_size),stride=self.stride,padding=self.padding_size),
+			nn.Conv2d(map_c,out_c,(self.kernel_size,self.kernel_size),stride=self.stride,padding=self.padding_size),
 			nn.ReLU())
 
 		##Conver image dimension to lstm_hidden_size
