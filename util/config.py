@@ -22,7 +22,7 @@ image_embed_dim = 2048
 
 # training config
 epochs = 100
-batch_size = 500
+batch_size = 100
 initial_lr = 0.001 # default Adam lr
 initial_embed_lr = 0.001
 lr_halflife = 50000  # in iterations
@@ -30,8 +30,10 @@ data_workers = 8
 max_answers = 3000
 cuda = True
 val_interval = 2
-decay_step = 5
-decay_size = 0.1
+# decay_step = 5
+# decay_size = 0.1
+decay_step = 1
+decay_size = 0.5
 rn_conv_channel = 512
 lstm_hidden_size = 500
 g_mlp_hidden_size = 256
