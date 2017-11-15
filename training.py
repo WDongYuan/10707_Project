@@ -125,11 +125,12 @@ if __name__=="__main__":
             val_acc=torch.cat(val_accs,dim=0).mean()
             print("epoch %s, validation accuracy %s" %(str(i),str(val_acc)))
             if val_acc > best_perf:
+                print("Saving model...")
                 best_perf = val_acc
-                # torch.save(model,"./best_model.model")
-                save_model({'model': model.state_dict(),
-                    'optimizer':optimizer.state_dict()},
-                    "./my_best_model.model")
+                torch.save(model,"./my_best_model.model")
+                # save_model({'model': model.state_dict(),
+                #     'optimizer':optimizer.state_dict()},
+                #     "./my_best_model.model")
     print("best performance %s" %str(best_perf))
         
     
