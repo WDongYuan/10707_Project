@@ -99,7 +99,7 @@ if __name__=="__main__":
             tmp_acc.append(acc.view(-1))
             sample_counter += config.batch_size
             if sample_counter%5000==0:
-                print((torch.cat(tmp_acc,dim=0).mean(),batch_loss/config.batch_size)),
+                print((torch.cat(tmp_acc,dim=0).mean(),loss.data[0])),
                 # print("."),
                 tmp_acc = []
             if sample_counter%100000==0:
