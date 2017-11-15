@@ -54,8 +54,8 @@ if __name__=="__main__":
         model = torch.load("./my_best_model.model")
     #########################################################################
     lr = float(sys.argv[2])
-    optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = lr)
-    # optimizer = torch.optim.SGD([p for p in model.parameters() if p.requires_grad], lr=lr, momentum=0.9)
+    # optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = lr)
+    optimizer = torch.optim.SGD([p for p in model.parameters() if p.requires_grad], lr=lr, momentum=0.9)
 
     best_perf = 0.0
     if int(sys.argv[1]) == 2:    
