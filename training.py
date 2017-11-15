@@ -45,8 +45,8 @@ if __name__=="__main__":
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
         model.cuda()
     lr = float(sys.argv[2])
-    embed_params = list(map(id, model.embed.parameters()))
-    base_params = filter(lambda p: id(p) not in embed_params,model.parameters())
+    # embed_params = list(map(id, model.embed.parameters()))
+    # base_params = filter(lambda p: id(p) not in embed_params,model.parameters())
     # optimizer = optim.RMSprop([
     #                         {'params':model.embed.parameters(),'lr': config.initial_embed_lr},
     #                         {'params':base_params}
