@@ -78,8 +78,7 @@ class Attention(nn.Module):
         self.drop = nn.Dropout(drop_out)
     def forward(self,q,v,param):
         #ATT
-        batch_size ,_,_,_ = q.size()
-        _,seq_size,_ = q.size()
+        batch_size ,seq_size ,_ = q.size()
         out_q = Variable(torch.ones(batch_size,seq_size,1).float().cuda(async=True),**param) # (b,l,1)
         out_i = Variable(torch.ones(batch_size,self.img_size,1).float().cuda(async=True),**param) # (b,s,1)
         v = self.drop(v)
