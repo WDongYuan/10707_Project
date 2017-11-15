@@ -33,11 +33,11 @@ if __name__=="__main__":
     torch.backends.cudnn.enabled = True
     print("Loading data...")
     #########################################################################
-    training,train_dict_size = data.get_loader(train=True,full_batch = False)
-    val,val_dict_size = data.get_loader(val=True,full_batch= False)
+    # training,train_dict_size = data.get_loader(train=True,full_batch = False)
+    # val,val_dict_size = data.get_loader(val=True,full_batch= False)
     #########################################################################
-    # training,train_dict_size = data.get_loader(val=True,full_batch = False)
-    # val,val_dict_size = training,train_dict_size
+    training,train_dict_size = data.get_loader(val=True,full_batch = False)
+    val,val_dict_size = training,train_dict_size
     #########################################################################
     print("Finish loading data!")
     #########################################################################
@@ -48,14 +48,14 @@ if __name__=="__main__":
     if not load_model:
         feature_size = 500
         model = stacked_att.StackAttNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
-                config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,feature_size)
+                config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,feature_size,config.drop)
     else:
         print("Loading model...")
         model = torch.load("./my_best_model.model")
     #########################################################################
     lr = float(sys.argv[2])
-    # optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = lr)
-    optimizer = torch.optim.SGD([p for p in model.parameters() if p.requires_grad], lr=lr, momentum=0.9)
+    optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = lr)
+    # optimizer = torch.optim.SGD([p for p in model.parameters() if p.requires_grad], lr=lr, momentum=0.9)
 
     best_perf = 0.0
     if int(sys.argv[1]) == 2:    

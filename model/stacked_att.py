@@ -10,10 +10,11 @@ import torch.nn.init as init
 
 class StackAttNetwork(nn.Module):
 	def __init__(self,voc_size,word_embedding_size,map_c,out_c,map_w,map_h,
-		answer_voc_size,lstm_hidden_size,feature_size):
+		answer_voc_size,lstm_hidden_size,feature_size,drop=0.0):
 		
 		super(StackAttNetwork, self).__init__()
 
+		self.dropout = nn.Dropout(drop)
 		self.img_space = map_w*map_h
 		self.map_w = map_w
 		self.map_h = map_h
@@ -47,7 +48,8 @@ class StackAttNetwork(nn.Module):
 		self.stride = 1
 		self.conv = nn.Sequential(
 			nn.Conv2d(map_c,out_c,(self.kernel_size,self.kernel_size),stride=self.stride,padding=self.padding_size),
-			nn.ReLU())
+			nn.ReLU(),
+			self.dropout)
 
 		##Conver image dimension to lstm_hidden_size
 		self.convert_d = nn.Sequential(
@@ -56,9 +58,9 @@ class StackAttNetwork(nn.Module):
 		self.convert_c = self.new_lstm_hidden_size
 
 		##Attention layer1
-		self.att1 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h)
+		self.att1 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
 		##Attention layer2
-		self.att2 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h)
+		self.att2 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
 
 		##Map to answer space
 		self.linear_u = nn.Linear(self.new_lstm_hidden_size,self.answer_voc_size)
@@ -97,6 +99,7 @@ class StackAttNetwork(nn.Module):
 
 		##Generate answer
 		# print(u.size())
+		u = self.dropout(u)
 		ans_prob = self.log_softmax(self.linear_u(u))
 		return ans_prob
 
@@ -108,8 +111,10 @@ class StackAttNetwork(nn.Module):
 			init.xavier_uniform(w)
 
 class Attention(nn.Module):
-	def __init__(self,lstm_hidden_size,feature_size,convert_c,map_w,map_h):
+	def __init__(self,lstm_hidden_size,feature_size,convert_c,map_w,map_h,drop):
 		super(Attention,self).__init__()
+		self.dropout = nn.Dropout(drop)
+
 		self.batch_size = 0
 		self.lstm_hidden_size = lstm_hidden_size
 		self.feature_size = feature_size
@@ -127,8 +132,15 @@ class Attention(nn.Module):
 	def forward(self,vi,vq):
 		self.batch_size,_ = vq.size()
 		vi = vi.view(self.batch_size*self.img_space,self.convert_c)
+
+		vi = self.dropout(vi)
+		vq = self.dropout(vq)
+
 		ha = self.tanh(self.linear_i(vi).view(self.batch_size,self.img_space,self.feature_size)+
 			self.linear_q(vq).unsqueeze(1).expand(self.batch_size,self.img_space,self.feature_size))
+
+		ha = self.dropout(ha)
+
 		ha = ha.view(-1,self.feature_size)
 		pi = self.softmax(self.linear_h(ha).view(self.batch_size,self.img_space)).unsqueeze(1)
 		vi_tilde = torch.bmm(pi,vi.view(self.batch_size,self.img_space,self.convert_c)).squeeze()
