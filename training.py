@@ -31,11 +31,11 @@ if __name__=="__main__":
     torch.backends.cudnn.enabled = True
     print("Loading data...")
     #########################################################################
-    # training,train_dict_size = data.get_loader(train=True,full_batch = False)
-    # val,val_dict_size = data.get_loader(val=True,full_batch= False)
+    training,train_dict_size = data.get_loader(train=True,full_batch = False)
+    val,val_dict_size = data.get_loader(val=True,full_batch= False)
     #########################################################################
-    training,train_dict_size = data.get_loader(val=True,full_batch = False)
-    val,val_dict_size = training,train_dict_size
+    # training,train_dict_size = data.get_loader(val=True,full_batch = False)
+    # val,val_dict_size = training,train_dict_size
     #########################################################################
     print("Finish loading data!")
     #########################################################################
@@ -99,7 +99,7 @@ if __name__=="__main__":
             tmp_acc.append(acc.view(-1))
             sample_counter += config.batch_size
             if sample_counter%5000==0:
-                print(torch.cat(tmp_acc,dim=0).mean()),
+                print((torch.cat(tmp_acc,dim=0).mean(),batch_loss/config.batch_size)),
                 # print("."),
                 tmp_acc = []
             if sample_counter%100000==0:
