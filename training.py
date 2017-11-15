@@ -51,7 +51,7 @@ if __name__=="__main__":
                 config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,feature_size)
     else:
         print("Loading model...")
-        model = torch.load("./best_model.model")
+        model = torch.load("./my_best_model.model")
     #########################################################################
     lr = float(sys.argv[2])
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = lr)
@@ -131,7 +131,7 @@ if __name__=="__main__":
             if val_acc > best_perf:
                 print("Saving model...")
                 best_perf = val_acc
-                torch.save(model,"./my_best_model.model")
+                torch.save(model,"./my_best_model_new.model")
                 # save_model({'model': model.state_dict(),
                 #     'optimizer':optimizer.state_dict()},
                 #     "./my_best_model.model")
