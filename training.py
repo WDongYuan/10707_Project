@@ -51,7 +51,7 @@ if __name__=="__main__":
                 config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,feature_size,config.drop)
     else:
         print("Loading model...")
-        model = torch.load("./my_best_model.model")
+        model = torch.load("./my_best_model_new.model")
     #########################################################################
     lr = float(sys.argv[2])
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = lr)
