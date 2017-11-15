@@ -73,6 +73,7 @@ class Attention(nn.Module):
         self.att_i = nn.Linear(feat_hidden_size,1,bias=False)
         self.att_q = nn.Linear(feat_hidden_size,1,bias=False)
         self.feat_hidden_size = feat_hidden_size
+        self.lstm_hidden_size = lstm_hidden_size
         self.img_size = loc_size * loc_size
         self.channel_size = channel_size
         self.drop = nn.Dropout(drop_out)
