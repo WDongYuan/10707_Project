@@ -20,26 +20,36 @@ import torch.nn as nn
 from datetime import datetime
 import time
 
+def save_model(state, filename='saved_model.out'):
+    torch.save(state, filename)
+
 if __name__=="__main__":
+    load_model = True
+
     train = True
     cudnn.benchmark = True
     torch.backends.cudnn.enabled = True
     print("Loading data...")
     #########################################################################
-    training,train_dict_size = data.get_loader(train=True,full_batch = False)
-    val,val_dict_size = data.get_loader(val=True,full_batch= False)
+    # training,train_dict_size = data.get_loader(train=True,full_batch = False)
+    # val,val_dict_size = data.get_loader(val=True,full_batch= False)
     #########################################################################
-    # training,train_dict_size = data.get_loader(val=True,full_batch = False)
-    # val,val_dict_size = training,train_dict_size
+    training,train_dict_size = data.get_loader(val=True,full_batch = False)
+    val,val_dict_size = training,train_dict_size
     #########################################################################
     print("Finish loading data!")
     #########################################################################
     # model = relational_network_model.RelationalNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
     #         config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,config.g_mlp_hidden_size,config.relation_length)
     #########################################################################
-    feature_size = 100
-    model = stacked_att.StackAttNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
-            config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,feature_size)
+    model = None
+    if not load_model:
+        feature_size = 100
+        model = stacked_att.StackAttNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
+                config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,feature_size)
+    else:
+        print("Loading model...")
+        model = torch.load("./best_model.model")
     #########################################################################
     lr = float(sys.argv[2])
     optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = lr)
@@ -72,6 +82,7 @@ if __name__=="__main__":
         model.train()
         start_time = time.time()
         sample_counter = 0
+        tmp_acc = 0
         for v,q,a,item,q_len in training:
             q = Variable(q.cuda(async=True),**var_params)
             a = Variable(a.cuda(async=True),**var_params)
@@ -87,6 +98,7 @@ if __name__=="__main__":
             train_accs.append(acc.view(-1))
             sample_counter += config.batch_size
             if sample_counter%5000==0:
+                print(acc)
                 print("."),
             if sample_counter%100000==0:
                 print("")
@@ -111,7 +123,10 @@ if __name__=="__main__":
             print("epoch %s, validation accuracy %s" %(str(i),str(val_acc)))
             if val_acc > best_perf:
                 best_perf = val_acc
-                torch.save(model,"./best_model.model")
+                # torch.save(model,"./best_model.model")
+                # save_model({'model': model.state_dict(),
+                #     'optimizer':optimizer.state_dict()},
+                #     "./best_model.model")
     print("best performance %s" %str(best_perf))
         
     
