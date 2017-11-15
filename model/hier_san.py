@@ -31,6 +31,7 @@ class hier_san(nn.Module):
 
 class TextNN(nn.Module):
     def __init__(self,vocab_size,ans_size,embed_size,lstm_hidden_size,drop_out):
+        super(TextNN,self).__init__()
         self.embed = nn.Embedding(vocab_size, embed_size,padding_idx=0)
         self.embed_size = embed_size
         self.lstm_hidden_size = lstm_hidden_size
@@ -63,6 +64,7 @@ class TextNN(nn.Module):
 
 class Attention(nn.Module):
     def __init__(self,stack_size,lstm_hidden_size,channel_size,loc_size,feat_hidden_size,drop_out):
+        super(Attention,self).__init__()
         self.stack_size = stack_size
         ##TODO change the bmm to linear
         self.affi = nn.Linear(lstm_hidden_size,channel_size,bias=False)
