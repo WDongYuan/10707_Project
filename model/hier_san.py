@@ -43,7 +43,7 @@ class TextNN(nn.Module):
         self.drop = nn.Dropout(drop_out)
 
     def forward(self,q,q_length,param):
-        batch_size ,_,_,_ = q.size()
+        batch_size ,_,_ = q.size()
         self.batch_size = batch_size
         q_c_0 = self.init_hidden(param)
         q_h_0 = self.init_hidden(param)
