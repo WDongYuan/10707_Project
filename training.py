@@ -127,9 +127,9 @@ if __name__=="__main__":
             if val_acc > best_perf:
                 best_perf = val_acc
                 # torch.save(model,"./best_model.model")
-                # save_model({'model': model.state_dict(),
-                #     'optimizer':optimizer.state_dict()},
-                #     "./best_model.model")
+                save_model({'model': model.state_dict(),
+                    'optimizer':optimizer.state_dict()},
+                    "./best_model.model")
     print("best performance %s" %str(best_perf))
         
     
