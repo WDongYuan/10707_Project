@@ -24,6 +24,8 @@ def save_model(state, filename='saved_model.out'):
     torch.save(state, filename)
 
 if __name__=="__main__":
+
+    acc_record_file = open("./acc_record_file","w+")
     load_model = False
 
     train = True
@@ -110,6 +112,7 @@ if __name__=="__main__":
         train_acc= torch.cat(train_accs,dim=0).mean()
         print("")
         print("epoch %s, loss %s, accuracy %s" %(str(i),str(batch_loss/config.batch_size),str(train_acc)))
+        acc_record_file.write("train: "+str(batch_loss/config.batch_size)+" "+str(train_acc)+"\n")
         if (i+1)%config.val_interval ==0:
             print("")
             val_accs = []
@@ -124,6 +127,7 @@ if __name__=="__main__":
                 val_accs.append(acc.view(-1))
             val_acc=torch.cat(val_accs,dim=0).mean()
             print("epoch %s, validation accuracy %s" %(str(i),str(val_acc)))
+            acc_record_file.write("validation: "+str(val_acc)+"\n")
             if val_acc > best_perf:
                 print("Saving model...")
                 best_perf = val_acc
@@ -131,6 +135,7 @@ if __name__=="__main__":
                 # save_model({'model': model.state_dict(),
                 #     'optimizer':optimizer.state_dict()},
                 #     "./my_best_model.model")
+    acc_record_file.close()
     print("best performance %s" %str(best_perf))
         
     
