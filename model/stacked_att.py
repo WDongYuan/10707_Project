@@ -26,6 +26,7 @@ class StackAttNetwork(nn.Module):
 		self.voc_size = voc_size
 		self.word_embedding_size = word_embedding_size
 		self.embed = nn.Embedding(self.voc_size, self.word_embedding_size,padding_idx=0)
+		init.xavier_uniform(self.embed.weight)
 
 		##LSTM
 		self.lstm_layer = 1
