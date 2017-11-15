@@ -26,7 +26,7 @@ def save_model(state, filename='saved_model.out'):
 if __name__=="__main__":
 
     acc_record_file = open("./acc_record_file","w+")
-    load_model = False
+    load_model = True
 
     train = True
     cudnn.benchmark = True

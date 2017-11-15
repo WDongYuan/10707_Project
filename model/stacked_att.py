@@ -6,6 +6,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 import torch.backends.cudnn as cudnn
 from torch.nn.init import kaiming_uniform
+import torch.nn.init as init
 
 class StackAttNetwork(nn.Module):
 	def __init__(self,voc_size,word_embedding_size,map_c,out_c,map_w,map_h,
@@ -34,6 +35,9 @@ class StackAttNetwork(nn.Module):
 		self.question_lstm = nn.LSTM(self.word_embedding_size, self.lstm_hidden_size,
 									num_layers=self.lstm_layer,bidirectional=self.bidirectional_flag,batch_first=True)
 		self.new_lstm_hidden_size = self.lstm_hidden_size*self.direction*self.lstm_layer
+
+		self._init_lstm(self.question_lstm.weight_ih_l0)
+		self._init_lstm(self.question_lstm.weight_hh_l0)
 
 		##CNN
 		self.out_c = out_c
@@ -67,8 +71,8 @@ class StackAttNetwork(nn.Module):
 		q_emb = self.embed(q)
 
 		##LSTM
-		q_c_0 = self.init_hidden(param)
-		q_h_0 = self.init_hidden(param)
+		# q_c_0 = self.init_hidden(param)
+		# q_h_0 = self.init_hidden(param)
 		pack_q = torch.nn.utils.rnn.pack_padded_sequence(q_emb, list(sents_lengths.data.type(torch.LongTensor)), batch_first=True)
 		self.question_lstm.flatten_parameters()
 		q_h_n, (q_h_t,q_c_t) = self.question_lstm(pack_q,(q_h_0,q_c_0))
@@ -96,6 +100,10 @@ class StackAttNetwork(nn.Module):
 
 	def init_hidden(self,param):
 		return autograd.Variable(torch.rand(self.lstm_layer*self.direction,self.batch_size,self.lstm_hidden_size).cuda(async=True),**param)
+
+	def _init_lstm(self, weight):
+		for w in weight.chunk(4, 0):
+			init.xavier_uniform(w)
 
 class Attention(nn.Module):
 	def __init__(self,lstm_hidden_size,feature_size,convert_c,map_w,map_h):
