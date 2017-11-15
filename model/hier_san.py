@@ -43,7 +43,7 @@ class TextNN(nn.Module):
         self.drop = nn.Dropout(drop_out)
 
     def forward(self,q,q_length,param):
-        batch_size ,_,_ = q.size()
+        batch_size = q.size()[0]
         self.batch_size = batch_size
         q_c_0 = self.init_hidden(param)
         q_h_0 = self.init_hidden(param)
@@ -78,7 +78,7 @@ class Attention(nn.Module):
         self.drop = nn.Dropout(drop_out)
     def forward(self,q,v,param):
         #ATT
-        batch_size ,seq_size ,_ = q.size()
+        batch_size ,seq_size = q.size()[:2]
         out_q = Variable(torch.ones(batch_size,seq_size,1).float().cuda(async=True),**param) # (b,l,1)
         out_i = Variable(torch.ones(batch_size,self.img_size,1).float().cuda(async=True),**param) # (b,s,1)
         v = self.drop(v)
