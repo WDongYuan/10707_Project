@@ -33,11 +33,11 @@ if __name__=="__main__":
     torch.backends.cudnn.enabled = True
     print("Loading data...")
     #########################################################################
-    # training,train_dict_size = data.get_loader(train=True,full_batch = False)
-    # val,val_dict_size = data.get_loader(val=True,full_batch= False)
+    training,train_dict_size = data.get_loader(train=True,full_batch = False)
+    val,val_dict_size = data.get_loader(val=True,full_batch= False)
     #########################################################################
-    training,train_dict_size = data.get_loader(val=True,full_batch = False)
-    val,val_dict_size = training,train_dict_size
+    # training,train_dict_size = data.get_loader(val=True,full_batch = False)
+    # val,val_dict_size = training,train_dict_size
     #########################################################################
     print("Finish loading data!")
     #########################################################################
@@ -76,6 +76,7 @@ if __name__=="__main__":
 
     print("data is fully loaded")
     print("lr"+str(lr))
+    print("dropout = "+str(config.drop))
     print("decay step %s, size %s" %(str(config.decay_step),str(config.decay_size)))
     for i in tqdm(range(config.epochs)):
         lr_scheduler.step()
