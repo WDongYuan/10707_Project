@@ -24,7 +24,7 @@ def save_model(state, filename='saved_model.out'):
     torch.save(state, filename)
 
 if __name__=="__main__":
-    load_model = True
+    load_model = False
 
     train = True
     cudnn.benchmark = True
@@ -44,7 +44,7 @@ if __name__=="__main__":
     #########################################################################
     model = None
     if not load_model:
-        feature_size = 100
+        feature_size = 500
         model = stacked_att.StackAttNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
                 config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,feature_size)
     else:
@@ -99,7 +99,7 @@ if __name__=="__main__":
             tmp_acc.append(acc.view(-1))
             sample_counter += config.batch_size
             if sample_counter%5000==0:
-                print((round(torch.cat(tmp_acc,dim=0).mean(),4),round(loss.data[0]/config.batch_size,4))),
+                print((round(torch.cat(tmp_acc,dim=0).mean(),4),round(loss.data[0]))),
                 # print("."),
                 tmp_acc = []
             if sample_counter%100000==0:

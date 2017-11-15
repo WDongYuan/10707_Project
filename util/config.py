@@ -17,12 +17,12 @@ image_size = 448 #224 for resnet 2048*7*7 filter adoption #448 for google paper 
 output_size = 14  # size of the feature maps after processing through a network
 output_features = 2048 # number of feature maps thereof
 central_fraction = 0.875  # only take this much of the centre when scaling and centre cropping
-word_embed_dim = 300
+word_embed_dim = 500
 image_embed_dim = 2048
 
 # training config
 epochs = 100
-batch_size = 200
+batch_size = 500
 initial_lr = 0.001 # default Adam lr
 initial_embed_lr = 0.001
 lr_halflife = 50000  # in iterations
@@ -32,7 +32,7 @@ cuda = True
 val_interval = 1
 decay_step = 5
 decay_size = 0.1
-rn_conv_channel = 50
-lstm_hidden_size = 512
+rn_conv_channel = 512
+lstm_hidden_size = 500
 g_mlp_hidden_size = 256
 relation_length = 512
