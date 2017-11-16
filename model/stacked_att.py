@@ -63,7 +63,7 @@ class StackAttNetwork(nn.Module):
 		##Attention layer1
 		self.att1 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
 		##Attention layer2
-		self.att2 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
+		# self.att2 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
 
 		##Map to answer space
 		self.linear_u = nn.Linear(self.new_lstm_hidden_size,self.answer_voc_size)
