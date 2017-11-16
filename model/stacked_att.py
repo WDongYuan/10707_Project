@@ -42,7 +42,7 @@ class StackAttNetwork(nn.Module):
 		self._init_lstm(self.question_lstm.weight_hh_l0)
 
 		##CNN
-		# self.out_c = out_c
+		self.out_c = out_c
 		# self.kernel_size = 3
 		# self.padding_size = (self.kernel_size-1) // 2
 		# self.stride = 1
