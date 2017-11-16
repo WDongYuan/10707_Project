@@ -47,11 +47,11 @@ if __name__=="__main__":
     lr = float(sys.argv[2])
     embed_params = list(map(id, model.text.embed.parameters()))
     base_params = filter(lambda p: id(p) not in embed_params,model.parameters())
-    optimizer = optim.RMSprop([
-                            {'params':model.text.embed.parameters(),'lr': config.initial_embed_lr},
-                            {'params':base_params}
-                            ],lr = lr)
-    # optimizer = optim.RMSprop([p for p in model.parameters() if p.requires_grad],lr = lr)
+    # optimizer = optim.Adam([
+    #                         {'params':model.text.embed.parameters(),'lr': config.initial_embed_lr},
+    #                         {'params':base_params}
+    #                         ],lr = lr)
+    optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = lr)
 
     best_perf = 0.0
     
