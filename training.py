@@ -20,12 +20,35 @@ import torch.nn as nn
 from datetime import datetime
 import time
 
+def Validation(model,val,val_params,best_perf):
+    print("")
+    val_accs = []
+    model.eval()
+    for v,q,a,item,q_len in val:
+        q = Variable(q.cuda(async=True),**val_params)
+        a = Variable(a.cuda(async=True),**val_params)
+        v = Variable(v.cuda(async=True),**val_params)
+        q_len = Variable(q_len.cuda(async=True), **val_params)
+        o = model(q,v,q_len,val_params)
+        acc = utils.batch_accuracy(o.data,a.data).cpu()
+        val_accs.append(acc.view(-1))
+    val_acc=torch.cat(val_accs,dim=0).mean()
+    print("epoch %s, validation accuracy %s" %(str(i),str(val_acc)))
+    # acc_record_file.write("validation: "+str(val_acc)+"\n")
+    if val_acc > best_perf:
+        print("Saving model...")
+        best_perf = val_acc
+        torch.save(model,"./my_best_model_new.model")
+        # save_model({'model': model.state_dict(),
+        #     'optimizer':optimizer.state_dict()},
+        #     "./my_best_model.model")
+    return best_perf
 def save_model(state, filename='saved_model.out'):
     torch.save(state, filename)
 
 if __name__=="__main__":
 
-    acc_record_file = open("./acc_record_file","w+")
+    # acc_record_file = open("./acc_record_file","w+")
     load_model = True if sys.argv[3]=="load" else False
 
     train = True
@@ -33,11 +56,11 @@ if __name__=="__main__":
     torch.backends.cudnn.enabled = True
     print("Loading data...")
     #########################################################################
-    training,train_dict_size = data.get_loader(train=True,full_batch = False)
-    val,val_dict_size = data.get_loader(val=True,full_batch= False)
+    # training,train_dict_size = data.get_loader(train=True,full_batch = False)
+    # val,val_dict_size = data.get_loader(val=True,full_batch= False)
     #########################################################################
-    # training,train_dict_size = data.get_loader(val=True,full_batch = False)
-    # val,val_dict_size = training,train_dict_size
+    training,train_dict_size = data.get_loader(val=True,full_batch = False)
+    val,val_dict_size = training,train_dict_size
     #########################################################################
     print("Finish loading data!")
     #########################################################################
@@ -78,6 +101,10 @@ if __name__=="__main__":
     print("lr"+str(lr))
     print("dropout = "+str(config.drop))
     print("decay step %s, size %s" %(str(config.decay_step),str(config.decay_size)))
+
+    Validation(model,val,val_params,best_perf)
+    exit()
+    
     for i in tqdm(range(config.epochs)):
         lr_scheduler.step()
         batch_loss = 0
@@ -116,27 +143,7 @@ if __name__=="__main__":
         print("epoch %s, loss %s, accuracy %s" %(str(i),str(batch_loss/config.batch_size),str(train_acc)))
         acc_record_file.write("train: "+str(batch_loss/config.batch_size)+" "+str(train_acc)+"\n")
         if (i+1)%config.val_interval ==0:
-            print("")
-            val_accs = []
-            model.eval()
-            for v,q,a,item,q_len in val:
-                q = Variable(q.cuda(async=True),**val_params)
-                a = Variable(a.cuda(async=True),**val_params)
-                v = Variable(v.cuda(async=True),**val_params)
-                q_len = Variable(q_len.cuda(async=True), **val_params)
-                o = model(q,v,q_len,val_params)
-                acc = utils.batch_accuracy(o.data,a.data).cpu()
-                val_accs.append(acc.view(-1))
-            val_acc=torch.cat(val_accs,dim=0).mean()
-            print("epoch %s, validation accuracy %s" %(str(i),str(val_acc)))
-            acc_record_file.write("validation: "+str(val_acc)+"\n")
-            if val_acc > best_perf:
-                print("Saving model...")
-                best_perf = val_acc
-                torch.save(model,"./my_best_model_new.model")
-                # save_model({'model': model.state_dict(),
-                #     'optimizer':optimizer.state_dict()},
-                #     "./my_best_model.model")
+            best_perf = Validation(model,val,val_params,best_perf)
     acc_record_file.close()
     print("best performance %s" %str(best_perf))
         
