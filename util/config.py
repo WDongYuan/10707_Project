@@ -5,7 +5,7 @@ val_path = '../data/mscoco/val2014'  # directory of validation images
 test_path = '../data/mscoco/test2015'  # directory of test images
 preprocessed_path = '/10707data/resnet-14x14.h5'  # path where preprocessed features are saved to and loaded from
 numpy_path = './data/features_id.npz'
-vocabulary_path = 'data/vocab/vocab.json'  # path where the used vocabularies for question and answers are saved to
+vocabulary_path = '../data/vocab/vocab.json'  # path where the used vocabularies for question and answers are saved to
 
 
 task = 'OpenEnded'
@@ -27,7 +27,7 @@ initial_lr = 0.001 # default Adam lr
 initial_embed_lr = 0.0001
 lr_halflife = 50000  # in iterations
 data_workers = 16
-max_answers = 3000
+max_answers = 1000
 cuda = True
 val_interval = 5
 decay_step = 10
@@ -36,5 +36,5 @@ stack_size = 2
 feat_hidden_size = 512
 max_length = 23
 lstm_hidden_size = 512
-out_hidden_size = 1024
+out_hidden_size = 512
 drop_out = 0.5
