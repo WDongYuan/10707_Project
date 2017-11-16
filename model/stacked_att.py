@@ -42,14 +42,14 @@ class StackAttNetwork(nn.Module):
 		self._init_lstm(self.question_lstm.weight_hh_l0)
 
 		##CNN
-		self.out_c = out_c
-		self.kernel_size = 3
-		self.padding_size = (self.kernel_size-1) // 2
-		self.stride = 1
-		self.conv = nn.Sequential(
-			nn.Conv2d(map_c,out_c,(self.kernel_size,self.kernel_size),stride=self.stride,padding=self.padding_size),
-			nn.ReLU(),
-			self.dropout)
+		# self.out_c = out_c
+		# self.kernel_size = 3
+		# self.padding_size = (self.kernel_size-1) // 2
+		# self.stride = 1
+		# self.conv = nn.Sequential(
+		# 	nn.Conv2d(map_c,out_c,(self.kernel_size,self.kernel_size),stride=self.stride,padding=self.padding_size),
+		# 	nn.ReLU(),
+		# 	self.dropout)
 
 		##Conver image dimension to lstm_hidden_size
 		self.convert_d = nn.Sequential(
@@ -83,7 +83,7 @@ class StackAttNetwork(nn.Module):
 		vq = q_h_t.permute(1,0,2).contiguous().view(self.batch_size,self.new_lstm_hidden_size)
 
 		##CNN
-		img = self.conv(img)
+		# img = self.conv(img)
 		img = img.permute(0,2,3,1).contiguous().view(batch_size,self.map_h*self.map_h,self.out_c)
 		# print(img.size())
 
