@@ -43,7 +43,7 @@ class StackAttNetwork(nn.Module):
 
 		##CNN
 		self.out_c = out_c
-		self.kernel_size = 3
+		self.kernel_size = 5
 		self.padding_size = (self.kernel_size-1) // 2
 		self.stride = 1
 		self.conv = nn.Sequential(
