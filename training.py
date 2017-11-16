@@ -141,7 +141,7 @@ if __name__=="__main__":
         train_acc= torch.cat(train_accs,dim=0).mean()
         print("")
         print("epoch %s, loss %s, accuracy %s" %(str(i),str(batch_loss/config.batch_size),str(train_acc)))
-        acc_record_file.write("train: "+str(batch_loss/config.batch_size)+" "+str(train_acc)+"\n")
+        # acc_record_file.write("train: "+str(batch_loss/config.batch_size)+" "+str(train_acc)+"\n")
         if (i+1)%config.val_interval ==0:
             best_perf = Validation(model,val,val_params,best_perf,i)
     acc_record_file.close()
