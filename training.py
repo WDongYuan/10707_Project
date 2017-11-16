@@ -19,12 +19,16 @@ import config
 import torch.nn as nn
 from datetime import datetime
 import time
+import numpy as np
 
 def Validation(model,val,val_params,best_perf,i):
     print("")
     val_accs = []
     model.eval()
+    rate = 0.1
     for v,q,a,item,q_len in val:
+        if np.random.random()>rate:
+            continue
         q = Variable(q.cuda(async=True),**val_params)
         a = Variable(a.cuda(async=True),**val_params)
         v = Variable(v.cuda(async=True),**val_params)
@@ -69,7 +73,7 @@ if __name__=="__main__":
     #########################################################################
     model = None
     if not load_model:
-        feature_size = 500
+        feature_size = 512
         model = stacked_att.StackAttNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
                 config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,feature_size,config.drop)
     else:

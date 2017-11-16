@@ -17,7 +17,7 @@ image_size = 448 #224 for resnet 2048*7*7 filter adoption #448 for google paper 
 output_size = 14  # size of the feature maps after processing through a network
 output_features = 2048 # number of feature maps thereof
 central_fraction = 0.875  # only take this much of the centre when scaling and centre cropping
-word_embed_dim = 500
+word_embed_dim = 200
 image_embed_dim = 2048
 
 # training config
