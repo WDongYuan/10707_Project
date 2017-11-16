@@ -1,5 +1,5 @@
 # paths
-qa_path = 'data'  # directory containing the question and annotation jsons
+qa_path = '../data'  # directory containing the question and annotation jsons
 train_path = '../data/mscoco/train2014'  # directory of training images
 val_path = '../data/mscoco/val2014'  # directory of validation images
 test_path = '../data/mscoco/test2015'  # directory of test images
