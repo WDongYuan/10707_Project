@@ -43,16 +43,13 @@ class StackAttNetwork(nn.Module):
 
 		##CNN
 		self.out_c = out_c
-		# self.kernel_size = 5
-		# self.padding_size = (self.kernel_size-1) // 2
-		# self.stride = 1
-		# self.conv = nn.Sequential(
-		# 	nn.Conv2d(map_c,int(map_c/2),(self.kernel_size,self.kernel_size),stride=self.stride,padding=self.padding_size),
-		# 	nn.ReLU(),
-		# 	self.dropout,
-		# 	nn.Conv2d(int(map_c/2),out_c,(self.kernel_size,self.kernel_size),stride=self.stride,padding=self.padding_size),
-		# 	nn.ReLU(),
-		# 	self.dropout)
+		self.kernel_size = 3
+		self.padding_size = (self.kernel_size-1) // 2
+		self.stride = 1
+		self.conv = nn.Sequential(
+			nn.Conv2d(map_c,out_c,(self.kernel_size,self.kernel_size),stride=self.stride,padding=self.padding_size),
+			nn.ReLU(),
+			self.dropout)
 
 		##Conver image dimension to lstm_hidden_size
 		self.convert_d = nn.Sequential(
@@ -65,7 +62,7 @@ class StackAttNetwork(nn.Module):
 		##Attention layer2
 		self.att2 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
 		##Attention layer3
-		self.att3 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
+		# self.att3 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
 
 		##Map to answer space
 		self.linear_u = nn.Linear(self.new_lstm_hidden_size,self.answer_voc_size)
@@ -101,8 +98,8 @@ class StackAttNetwork(nn.Module):
 		u = vi_tilde+u
 		vi_tilde = self.att2(img,u)
 		u = vi_tilde+u
-		vi_tilde = self.att3(img,u)
-		u = vi_tilde+u
+		# vi_tilde = self.att3(img,u)
+		# u = vi_tilde+u
 
 		##Generate answer
 		# print(u.size())
