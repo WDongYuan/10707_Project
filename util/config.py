@@ -5,7 +5,7 @@ val_path = '../data/mscoco/val2014'  # directory of validation images
 test_path = '../data/mscoco/test2015'  # directory of test images
 preprocessed_path = '/10707data/resnet-14x14.h5'  # path where preprocessed features are saved to and loaded from
 numpy_path = './data/features_id.npz'
-vocabulary_path = '../data/vocab/vocab.json'  # path where the used vocabularies for question and answers are saved to
+vocabulary_path = 'data/vocab/vocab.json'  # path where the used vocabularies for question and answers are saved to
 
 
 task = 'OpenEnded'
