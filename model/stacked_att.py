@@ -85,7 +85,7 @@ class StackAttNetwork(nn.Module):
 		vq = q_h_t.permute(1,0,2).contiguous().view(self.batch_size,self.new_lstm_hidden_size)
 
 		##CNN
-		# img = self.conv(img)
+		img = self.conv(img)
 		img = img.permute(0,2,3,1).contiguous().view(batch_size,self.map_h*self.map_h,self.out_c)
 		# print(img.size())
 
