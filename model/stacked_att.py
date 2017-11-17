@@ -165,15 +165,16 @@ class MyAttention(nn.Module):
 		self.map_w = map_w
 		self.map_h = map_h
 		self.img_space = self.map_h*self.map_w
-		self.lstm_hidden_size = 0
+		self.lstm_hidden_size = lstm_hidden_size
 		self.linear = nn.Linear(self.map_c,self.lstm_hidden_size)
+		self.relu = nn.ReLU()
 		# self.softmax = nn.Softmax()
 		# self.sigmoid = nn.Sigmoid()
 		# self.tanh = nn.Tanh()
 
 	def forward(self,vi,vq):
 		self.batch_size,_ = vq.size()
-		vi_c = self.linear(vi)
+		vi_c = self.linear(self.relu(vi))
 		weight = torch.bmm(vi_c,vq.unsqueeze(2)).view(self.batch_size,self.img_space)
 		weight = self.softmax(weight)
 		# weight = self.sigmoid(weight)
