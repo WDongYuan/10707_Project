@@ -64,7 +64,7 @@ class StackAttNetwork(nn.Module):
 		##Attention layer3
 		# self.att3 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
 
-		self.my_att = MyAttention(self.map_w,self.map_h)
+		self.my_att = MyAttention(self.convert_c,self.map_w,self.map_h,self.lstm_hidden_size)
 
 		##Map to answer space
 		self.linear_u = nn.Linear(self.new_lstm_hidden_size,self.answer_voc_size)
@@ -157,23 +157,27 @@ class Attention(nn.Module):
 		return vi_tilde
 
 class MyAttention(nn.Module):
-	def __init__(self,map_w,map_h):
+	def __init__(self,map_c,map_w,map_h,lstm_hidden_size):
 		super(MyAttention,self).__init__()
 
 		self.batch_size = 0
+		self.map_c = map_c
 		self.map_w = map_w
 		self.map_h = map_h
 		self.img_space = self.map_h*self.map_w
+		self.lstm_hidden_size = 0
+		self.linear = nn.Linear(self.map_c,self.lstm_hidden_size)
 		# self.softmax = nn.Softmax()
-		self.sigmoid = nn.Sigmoid()
-		self.tanh = nn.Tanh()
+		# self.sigmoid = nn.Sigmoid()
+		# self.tanh = nn.Tanh()
 
 	def forward(self,vi,vq):
 		self.batch_size,_ = vq.size()
-		weight = torch.bmm(vi,vq.unsqueeze(2)).view(self.batch_size,self.img_space)
-		# weight = self.softmax(weight)
+		vi_c = self.linear(vi)
+		weight = torch.bmm(vi_c,vq.unsqueeze(2)).view(self.batch_size,self.img_space)
+		weight = self.softmax(weight)
 		# weight = self.sigmoid(weight)
-		weight = self.tanh(weight)
+		# weight = self.tanh(weight)
 		v_att = torch.bmm(weight.unsqueeze(1),vi).squeeze()
 		return v_att
 
