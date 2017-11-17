@@ -42,29 +42,30 @@ class StackAttNetwork(nn.Module):
 		self._init_lstm(self.question_lstm.weight_hh_l0)
 
 		##CNN
-		self.out_c = out_c
-		self.kernel_size = 3
-		self.padding_size = (self.kernel_size-1) // 2
-		self.stride = 1
-		self.conv = nn.Sequential(
-			nn.Conv2d(map_c,out_c,(self.kernel_size,self.kernel_size),stride=self.stride,padding=self.padding_size),
-			nn.ReLU(),
-			self.dropout)
+		# self.out_c = out_c
+		# self.kernel_size = 3
+		# self.padding_size = (self.kernel_size-1) // 2
+		# self.stride = 1
+		# self.conv = nn.Sequential(
+		# 	nn.Conv2d(map_c,out_c,(self.kernel_size,self.kernel_size),stride=self.stride,padding=self.padding_size),
+		# 	nn.ReLU(),
+		# 	self.dropout)
 
 		##Conver image dimension to lstm_hidden_size
-		self.convert_d = nn.Sequential(
-			nn.Linear(out_c,self.new_lstm_hidden_size),
-			nn.Tanh())
-		self.convert_c = self.new_lstm_hidden_size
+		# self.convert_d = nn.Sequential(
+		# 	nn.Linear(out_c,self.new_lstm_hidden_size),
+		# 	nn.Tanh())
+		# self.convert_c = self.new_lstm_hidden_size
+		self.out_c = self.map_c
 
 		##Attention layer1
-		# self.att1 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
+		self.att1 = Attention(self.new_lstm_hidden_size,self.feature_size,self.out_c,self.map_w,self.map_h,drop)
 		##Attention layer2
-		# self.att2 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
+		self.att2 = Attention(self.new_lstm_hidden_size,self.feature_size,self.out_c,self.map_w,self.map_h,drop)
 		##Attention layer3
 		# self.att3 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
 
-		self.my_att = MyAttention(self.convert_c,self.map_w,self.map_h,self.lstm_hidden_size)
+		# self.my_att = MyAttention(self.convert_c,self.map_w,self.map_h,self.lstm_hidden_size)
 
 		##Map to answer space
 		self.linear_u = nn.Linear(self.new_lstm_hidden_size,self.answer_voc_size)
@@ -87,24 +88,26 @@ class StackAttNetwork(nn.Module):
 		vq = q_h_t.permute(1,0,2).contiguous().view(self.batch_size,self.new_lstm_hidden_size)
 
 		##CNN
-		img = self.conv(img)
-		img = img.permute(0,2,3,1).contiguous().view(batch_size,self.map_h*self.map_h,self.out_c)
+		# img = self.conv(img)
+		# img = img.permute(0,2,3,1).contiguous().view(batch_size,self.map_h*self.map_h,self.out_c)
 		# print(img.size())
 
 		##Convert image dimension to new_lstm_hidden_size
-		img = self.convert_d(img)
+		# img = self.convert_d(img)
+
+		img = img.permute(0,2,3,1).contiguous().view(batch_size,self.map_h*self.map_h,self.out_c)
 
 		##Attention
-		# u = vq
-		# vi_tilde = self.att1(img,u)
-		# u = vi_tilde+u
-		# vi_tilde = self.att2(img,u)
-		# u = vi_tilde+u
+		u = vq
+		vi_tilde = self.att1(img,u)
+		u = vi_tilde+u
+		vi_tilde = self.att2(img,u)
+		u = vi_tilde+u
 		# vi_tilde = self.att3(img,u)
 		# u = vi_tilde+u
 
 		##MyAttention
-		u = self.my_att(img,vq)
+		# u = self.my_att(img,vq)
 
 		##Generate answer
 		# print(u.size())
