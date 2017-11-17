@@ -92,7 +92,7 @@ class StackAttNetwork(nn.Module):
 		# print(img.size())
 
 		##Convert image dimension to new_lstm_hidden_size
-		# img = self.convert_d(img)
+		img = self.convert_d(img)
 
 		img = img.permute(0,2,3,1).contiguous().view(batch_size,self.map_h*self.map_h,self.out_c)
 
