@@ -3,6 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 import torch.autograd as autograd
+import torch.nn.init as init
+
 class hier_san(nn.Module):
     def __init__(self,stack_size,vocab_size,ans_size,embed_size,lstm_hidden_size,channel_size,loc_size,feat_hidden_size,out_hidden_size,drop_out):
         super(hier_san,self).__init__()
@@ -18,6 +20,12 @@ class hier_san(nn.Module):
         self.attention = Attention(stack_size,lstm_hidden_size,channel_size,loc_size,feat_hidden_size,drop_out)
         self.img_size = loc_size * loc_size
         self.channel_size = channel_size
+        for m in self.modules():
+            if isinstance(m, nn.Linear) or isinstance(m, nn.Conv2d):
+                init.xavier_uniform(m.weight)
+                if m.bias is not None:
+                    m.bias.data.zero_()
+
     def forward(self,q,v,q_length,param):
         v = v / (v.norm(p=2, dim=1, keepdim=True).expand_as(v) + 1e-8)
         v = v.view(-1,self.channel_size,self.img_size) # (b, c, s)
@@ -41,6 +49,9 @@ class TextNN(nn.Module):
         self.question_lstm = nn.LSTM(embed_size, lstm_hidden_size,
                                     num_layers=self.lstm_layer,bidirectional=self.bidirectional_flag,batch_first=True)
         self.drop = nn.Dropout(drop_out)
+        init.xavier_uniform(self.embed.weight)
+        self._init_lstm(self.lstm.weight_ih_l0)
+        self._init_lstm(self.lstm.weight_hh_l0)
 
     def forward(self,q,q_length,param):
         batch_size = q.size()[0]
@@ -57,6 +68,10 @@ class TextNN(nn.Module):
         #q = q.transpose(1,2).contiguous() # (b, h, l)
         q=q.contiguous()
         return q
+
+    def _init_lstm(self, weight):
+        for w in weight.chunk(4, 0):
+            init.xavier_uniform(w)
 
     def init_hidden(self,param):
         direction = 2 if self.bidirectional_flag else 1
@@ -77,6 +92,7 @@ class Attention(nn.Module):
         self.img_size = loc_size * loc_size
         self.channel_size = channel_size
         self.drop = nn.Dropout(drop_out)
+
     def forward(self,q,v,param):
         #ATT
         batch_size ,seq_size = q.size()[:2]
