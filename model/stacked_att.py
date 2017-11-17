@@ -53,7 +53,7 @@ class StackAttNetwork(nn.Module):
 
 		##Conver image dimension to lstm_hidden_size
 		self.convert_d = nn.Sequential(
-			nn.Linear(out_c,self.new_lstm_hidden_size),
+			nn.Linear(self.map_c,self.new_lstm_hidden_size),
 			nn.Tanh())
 		self.out_c = self.new_lstm_hidden_size
 
