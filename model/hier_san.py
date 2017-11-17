@@ -50,8 +50,8 @@ class TextNN(nn.Module):
                                     num_layers=self.lstm_layer,bidirectional=self.bidirectional_flag,batch_first=True)
         self.drop = nn.Dropout(drop_out)
         init.xavier_uniform(self.embed.weight)
-        self._init_lstm(self.lstm.weight_ih_l0)
-        self._init_lstm(self.lstm.weight_hh_l0)
+        self._init_lstm(self.question_lstm.weight_ih_l0)
+        self._init_lstm(self.question_lstm.weight_hh_l0)
 
     def forward(self,q,q_length,param):
         batch_size = q.size()[0]
