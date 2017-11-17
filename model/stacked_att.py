@@ -175,7 +175,7 @@ class MyAttention(nn.Module):
 	def forward(self,vi,vq):
 		self.batch_size,_ = vq.size()
 		vi_c = self.linear(self.relu(vi))
-		weight = torch.bmm(vi_c,vq.unsqueeze(2)).view(self.batch_size,self.img_space)
+		weight = torch.bmm(self.relu(vi_c),vq.unsqueeze(2)).view(self.batch_size,self.img_space)
 		weight = self.softmax(weight)
 		# weight = self.sigmoid(weight)
 		# weight = self.tanh(weight)
