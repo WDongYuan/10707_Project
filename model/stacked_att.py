@@ -58,11 +58,13 @@ class StackAttNetwork(nn.Module):
 		self.convert_c = self.new_lstm_hidden_size
 
 		##Attention layer1
-		self.att1 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
+		# self.att1 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
 		##Attention layer2
-		self.att2 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
+		# self.att2 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
 		##Attention layer3
 		# self.att3 = Attention(self.new_lstm_hidden_size,self.feature_size,self.convert_c,self.map_w,self.map_h,drop)
+
+		self.my_att = MyAttention(self.map_w,self.map_h)
 
 		##Map to answer space
 		self.linear_u = nn.Linear(self.new_lstm_hidden_size,self.answer_voc_size)
@@ -93,13 +95,16 @@ class StackAttNetwork(nn.Module):
 		img = self.convert_d(img)
 
 		##Attention
-		u = vq
-		vi_tilde = self.att1(img,u)
-		u = vi_tilde+u
-		vi_tilde = self.att2(img,u)
-		u = vi_tilde+u
+		# u = vq
+		# vi_tilde = self.att1(img,u)
+		# u = vi_tilde+u
+		# vi_tilde = self.att2(img,u)
+		# u = vi_tilde+u
 		# vi_tilde = self.att3(img,u)
 		# u = vi_tilde+u
+
+		##MyAttention
+		u = self.my_att(img,vq)
 
 		##Generate answer
 		# print(u.size())
@@ -150,5 +155,20 @@ class Attention(nn.Module):
 		vi_tilde = torch.bmm(pi,vi.view(self.batch_size,self.img_space,self.convert_c)).squeeze()
 
 		return vi_tilde
+
+class MyAttention(nn.Module):
+	def __init__(self,map_w,map_h):
+		super(Attention,self).__init__()
+
+		self.batch_size = 0
+		self.map_w = map_w
+		self.map_h = map_h
+		self.img_space = self.map_h*self.map_w
+
+	def forward(self,vi,vq):
+		self.batch_size,_ = vq.size()
+		weight = torch.bmm(vi,vq.unsqueeze(2)).view(self.batch_size,self.img_space)
+		v_att = torch.bmm(weight.unsqueeze(1),vi).squeeze()
+		return v_att
 
 
