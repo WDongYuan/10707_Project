@@ -168,7 +168,7 @@ class MyAttention(nn.Module):
 		self.lstm_hidden_size = lstm_hidden_size
 		self.linear = nn.Linear(self.map_c,self.lstm_hidden_size)
 		self.relu = nn.ReLU()
-		# self.softmax = nn.Softmax()
+		self.softmax = nn.Softmax()
 		# self.sigmoid = nn.Sigmoid()
 		# self.tanh = nn.Tanh()
 
