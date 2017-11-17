@@ -164,12 +164,16 @@ class MyAttention(nn.Module):
 		self.map_w = map_w
 		self.map_h = map_h
 		self.img_space = self.map_h*self.map_w
-		self.softmax = nn.Softmax()
+		# self.softmax = nn.Softmax()
+		self.sigmoid = nn.Sigmoid()
+		self.tanh = nn.Tanh()
 
 	def forward(self,vi,vq):
 		self.batch_size,_ = vq.size()
 		weight = torch.bmm(vi,vq.unsqueeze(2)).view(self.batch_size,self.img_space)
-		weight = self.softmax(weight)
+		# weight = self.softmax(weight)
+		# weight = self.sigmoid(weight)
+		weight = self.tanh(weight)
 		v_att = torch.bmm(weight.unsqueeze(1),vi).squeeze()
 		return v_att
 
