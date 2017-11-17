@@ -60,11 +60,11 @@ if __name__=="__main__":
     torch.backends.cudnn.enabled = True
     print("Loading data...")
     #########################################################################
-    # training,train_dict_size = data.get_loader(train=True,full_batch = False)
-    # val,val_dict_size = data.get_loader(val=True,full_batch= False)
+    training,train_dict_size = data.get_loader(train=True,full_batch = False)
+    val,val_dict_size = data.get_loader(val=True,full_batch= False)
     #########################################################################
-    training,train_dict_size = data.get_loader(val=True,full_batch = False)
-    val,val_dict_size = training,train_dict_size
+    # training,train_dict_size = data.get_loader(val=True,full_batch = False)
+    # val,val_dict_size = training,train_dict_size
     #########################################################################
     print("Finish loading data!")
     #########################################################################
@@ -81,7 +81,7 @@ if __name__=="__main__":
         model = torch.load("./my_best_model_new.model")
     #########################################################################
     lr = float(sys.argv[2])
-    optimizer = optim.Adam([p for p in model.parameters() if p.requires_grad],lr = lr)
+    optimizer = optim.Adam(model.parameters(),lr = lr)
     # optimizer = torch.optim.SGD([p for p in model.parameters() if p.requires_grad], lr=lr, momentum=0.9)
 
     best_perf = 0.0
