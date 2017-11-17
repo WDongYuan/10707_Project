@@ -9,7 +9,7 @@ from torch.nn.init import kaiming_uniform
 import torch.nn.init as init
 
 class StackAttNetwork(nn.Module):
-	def __init__(self,voc_size,word_embedding_size,map_c,out_c,map_w,map_h,
+	def __init__(self,voc_size,word_embedding_size,map_c,map_w,map_h,
 		answer_voc_size,lstm_hidden_size,feature_size,drop=0.0):
 		
 		super(StackAttNetwork, self).__init__()

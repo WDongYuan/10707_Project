@@ -73,8 +73,8 @@ if __name__=="__main__":
     #########################################################################
     model = None
     if not load_model:
-        feature_size = 512
-        model = stacked_att.StackAttNetwork(train_dict_size,config.word_embed_dim,config.output_features,config.rn_conv_channel,
+        feature_size = 1000
+        model = stacked_att.StackAttNetwork(train_dict_size,config.word_embed_dim,config.output_features,
                 config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,feature_size,config.drop)
     else:
         print("Loading model...")
