@@ -158,7 +158,7 @@ class Attention(nn.Module):
 
 class MyAttention(nn.Module):
 	def __init__(self,map_w,map_h):
-		super(Attention,self).__init__()
+		super(MyAttention,self).__init__()
 
 		self.batch_size = 0
 		self.map_w = map_w
