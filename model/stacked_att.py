@@ -52,11 +52,10 @@ class StackAttNetwork(nn.Module):
 		# 	self.dropout)
 
 		##Conver image dimension to lstm_hidden_size
-		# self.convert_d = nn.Sequential(
-		# 	nn.Linear(out_c,self.new_lstm_hidden_size),
-		# 	nn.Tanh())
-		# self.convert_c = self.new_lstm_hidden_size
-		self.out_c = self.map_c
+		self.convert_d = nn.Sequential(
+			nn.Linear(out_c,self.new_lstm_hidden_size),
+			nn.Tanh())
+		self.out_c = self.new_lstm_hidden_size
 
 		##Attention layer1
 		self.att1 = Attention(self.new_lstm_hidden_size,self.feature_size,self.out_c,self.map_w,self.map_h,drop)
@@ -123,27 +122,27 @@ class StackAttNetwork(nn.Module):
 			init.xavier_uniform(w)
 
 class Attention(nn.Module):
-	def __init__(self,lstm_hidden_size,feature_size,convert_c,map_w,map_h,drop):
+	def __init__(self,lstm_hidden_size,feature_size,out_c,map_w,map_h,drop):
 		super(Attention,self).__init__()
 		self.dropout = nn.Dropout(drop)
 
 		self.batch_size = 0
 		self.lstm_hidden_size = lstm_hidden_size
 		self.feature_size = feature_size
-		self.convert_c = convert_c
+		self.out_c = out_c
 		self.map_w = map_w
 		self.map_h = map_h
 		self.img_space = self.map_h*self.map_w
 
 		self.linear_q = nn.Linear(self.lstm_hidden_size,self.feature_size)
-		self.linear_i = nn.Linear(self.convert_c,self.feature_size,bias=False)
+		self.linear_i = nn.Linear(self.out_c,self.feature_size,bias=False)
 		self.tanh = nn.Tanh()
 		self.linear_h = nn.Linear(self.feature_size,1)
 		self.softmax = nn.Softmax()
 
 	def forward(self,vi,vq):
 		self.batch_size,_ = vq.size()
-		vi = vi.view(self.batch_size*self.img_space,self.convert_c)
+		vi = vi.view(self.batch_size*self.img_space,self.out_c)
 
 		vi = self.dropout(vi)
 		vq = self.dropout(vq)
@@ -155,7 +154,7 @@ class Attention(nn.Module):
 
 		ha = ha.view(-1,self.feature_size)
 		pi = self.softmax(self.linear_h(ha).view(self.batch_size,self.img_space)).unsqueeze(1)
-		vi_tilde = torch.bmm(pi,vi.view(self.batch_size,self.img_space,self.convert_c)).squeeze()
+		vi_tilde = torch.bmm(pi,vi.view(self.batch_size,self.img_space,self.out_c)).squeeze()
 
 		return vi_tilde
 
