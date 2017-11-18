@@ -22,11 +22,11 @@ image_embed_dim = 2048
 
 # training config
 epochs = 100
-batch_size = 100
+batch_size = 128
 initial_lr = 0.001 # default Adam lr
 initial_embed_lr = 0.0001
 lr_halflife = 50000  # in iterations
-data_workers = 16
+data_workers = 8
 max_answers = 3000
 cuda = True
 val_interval = 5
