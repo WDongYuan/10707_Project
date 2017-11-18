@@ -59,7 +59,7 @@ class TextNN(nn.Module):
         q_c_0 = self.init_hidden(param)
         q_h_0 = self.init_hidden(param)
         #LSTM 
-        q = self.embed(q)
+        q = F.tanh(self.embed(q))
         q = torch.nn.utils.rnn.pack_padded_sequence(self.drop(q), list(q_length.data.type(torch.LongTensor)), batch_first=True)
         self.question_lstm.flatten_parameters()
         q, (q_h_t,q_c_t) = self.question_lstm(q,(q_h_0,q_c_0)) # (b, l, h)
