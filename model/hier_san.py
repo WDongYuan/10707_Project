@@ -98,8 +98,8 @@ class Attention(nn.Module):
         batch_size ,seq_size = q.size()[:2]
         out_q = Variable((torch.ones(batch_size,seq_size,1).float()/seq_size).cuda(async=True),**param) # (b,l,1)
         out_i = Variable((torch.ones(batch_size,self.img_size,1).float()/self.img_size).cuda(async=True),**param) # (b,s,1)
-        v = self.drop(v)
-        q = self.drop(q)
+        # v = self.drop(v)
+        # q = self.drop(q)
         c = F.tanh(torch.bmm(self.affi(q.view(-1,self.lstm_hidden_size)).view(-1,seq_size,self.channel_size),v)) # (b, l, h) dot (h,c) dot (b,c,s) -> (b, l, s)
         for i in range(self.stack_size):
             out_i = out_i.expand(batch_size,self.img_size,self.channel_size)*v.transpose(1,2)
