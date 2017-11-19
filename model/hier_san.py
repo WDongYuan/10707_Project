@@ -108,8 +108,8 @@ class Attention(nn.Module):
             out_q = self.linear_q(out_q.view(-1,self.lstm_hidden_size)).view(-1,self.feat_hidden_size,seq_size) # (b, h, l) * (b, h, l) and (b, h, l) dot (k, h ) -> (b,k,l)
             h_i = F.tanh(out_i + torch.bmm(out_q,c)) # (b, k, s)
             h_q = F.tanh(out_q + torch.bmm(out_i,c.transpose(1,2))) #(b, k, l)
-            out_q = h_q
-            out_i = h_i
+            out_q = self.drop(h_q)
+            out_i = self.drop(h_i)
             out_q = F.softmax(self.att_q(out_q.transpose(1,2)).squeeze()).unsqueeze(2) # (b, l)
             out_i = F.softmax(self.att_i(out_i.transpose(1,2)).squeeze()).unsqueeze(2) # (b, s)
         return out_i,out_q
