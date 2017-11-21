@@ -27,7 +27,8 @@ class StackAttNetwork(nn.Module):
 		self.voc_size = voc_size
 		self.word_embedding_size = word_embedding_size
 		self.embed = nn.Embedding(self.voc_size, self.word_embedding_size,padding_idx=0)
-		init.xavier_uniform(self.embed.weight)
+		# init.xavier_uniform(self.embed.weight)
+		init.uniform(self.embed.weight,-0.01,0.01)
 
 		##LSTM
 		self.lstm_layer = 1
@@ -136,9 +137,16 @@ class Attention(nn.Module):
 		self.img_space = self.map_h*self.map_w
 
 		self.linear_q = nn.Linear(self.lstm_hidden_size,self.feature_size)
+		self.linear_uniform_init(self.linear_q)
+
 		self.linear_i = nn.Linear(self.out_c,self.feature_size,bias=False)
+		self.linear_uniform_init(self.linear_i)
+
 		self.tanh = nn.Tanh()
+
 		self.linear_h = nn.Linear(self.feature_size,1)
+		self.linear_uniform_init(self.linear_h)
+
 		self.softmax = nn.Softmax()
 
 	def forward(self,vi,vq):
@@ -158,6 +166,9 @@ class Attention(nn.Module):
 		vi_tilde = torch.bmm(pi,vi.view(self.batch_size,self.img_space,self.out_c)).squeeze()
 
 		return vi_tilde
+	def linear_uniform_init(self,layer):
+		init.uniform(layer.weight,-0.01,0.01)
+		init.uniform(layer.bias,-0.01,0.01)
 
 class MyAttention(nn.Module):
 	def __init__(self,map_c,map_w,map_h,lstm_hidden_size):
@@ -170,6 +181,7 @@ class MyAttention(nn.Module):
 		self.img_space = self.map_h*self.map_w
 		self.lstm_hidden_size = lstm_hidden_size
 		self.linear = nn.Linear(self.map_c,self.lstm_hidden_size)
+
 		self.relu = nn.ReLU()
 		self.softmax = nn.Softmax()
 		# self.sigmoid = nn.Sigmoid()
