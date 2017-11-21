@@ -60,11 +60,11 @@ if __name__=="__main__":
     torch.backends.cudnn.enabled = True
     print("Loading data...")
     #########################################################################
-    training,train_dict_size = data.get_loader(train=True,full_batch = False)
-    val,val_dict_size = data.get_loader(val=True,full_batch= False)
+    # training,train_dict_size = data.get_loader(train=True,full_batch = False)
+    # val,val_dict_size = data.get_loader(val=True,full_batch= False)
     #########################################################################
-    # training,train_dict_size = data.get_loader(val=True,full_batch = False)
-    # val,val_dict_size = training,train_dict_size
+    training,train_dict_size = data.get_loader(val=True,full_batch = False)
+    val,val_dict_size = training,train_dict_size
     #########################################################################
     print("Finish loading data!")
     #########################################################################

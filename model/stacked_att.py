@@ -28,7 +28,7 @@ class StackAttNetwork(nn.Module):
 		self.word_embedding_size = word_embedding_size
 		self.embed = nn.Embedding(self.voc_size, self.word_embedding_size,padding_idx=0)
 		# init.xavier_uniform(self.embed.weight)
-		init.uniform(self.embed.weight,-0.01,0.01)
+		init.uniform(self.embed.weight,a=-0.01,b=0.01)
 
 		##LSTM
 		self.lstm_layer = 1
@@ -167,8 +167,8 @@ class Attention(nn.Module):
 
 		return vi_tilde
 	def linear_uniform_init(self,layer):
-		init.uniform(layer.weight,-0.01,0.01)
-		init.uniform(layer.bias,-0.01,0.01)
+		init.uniform(layer.weight,a=-0.01,b=0.01)
+		init.uniform(layer.bias,a=-0.01,b=0.01)
 
 class MyAttention(nn.Module):
 	def __init__(self,map_c,map_w,map_h,lstm_hidden_size):
