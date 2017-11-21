@@ -143,7 +143,7 @@ class Attention(nn.Module):
 
 	def forward(self,vi,vq):
 		self.batch_size,_ = vq.size()
-		vi = vi.view(self.batch_size*self.img_space,self.out_c)
+		# vi = vi.view(self.batch_size*self.img_space,self.out_c)
 
 		vi = self.dropout(vi)
 		vq = self.dropout(vq)
