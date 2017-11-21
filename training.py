@@ -78,7 +78,7 @@ if __name__=="__main__":
                 config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,feature_size,config.drop)
     else:
         print("Loading model...")
-        model = torch.load("./my_best_model_new.model")
+        model = torch.load("./my_best_model.model")
     #########################################################################
     lr = float(sys.argv[2])
     optimizer = optim.Adam(model.parameters(),lr = lr)
@@ -148,8 +148,8 @@ if __name__=="__main__":
         print("")
         print("epoch %s, loss %s, accuracy %s" %(str(i),str(batch_loss/config.batch_size),str(train_acc)))
         # acc_record_file.write("train: "+str(batch_loss/config.batch_size)+" "+str(train_acc)+"\n")
-        if (i+1)%config.val_interval ==0:
-            best_perf = Validation(model,val,val_params,best_perf,i)
+        # if (i+1)%config.val_interval ==0:
+        #     best_perf = Validation(model,val,val_params,best_perf,i)
     acc_record_file.close()
     print("best performance %s" %str(best_perf))
         
