@@ -127,8 +127,8 @@ if __name__=="__main__":
             optimizer.zero_grad()
             loss =(-o*(a/10)).sum(dim=1).mean() # F.nll_loss(o,a)
             loss.backward()
-            for p in model.parameters():
-                print(torch.mean(torch.abs(p.grad.data)))
+            # for p in model.parameters():
+            #     print(torch.mean(torch.abs(p.grad.data)))
             optimizer.step()
             batch_loss += loss.data[0]
             acc = utils.batch_accuracy(o.data,a.data).cpu()
