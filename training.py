@@ -81,8 +81,8 @@ if __name__=="__main__":
         model = torch.load("./my_best_model_new.model")
     #########################################################################
     lr = float(sys.argv[2])
-    optimizer = optim.Adam(model.parameters(),lr = lr)
-    # optimizer = torch.optim.SGD([p for p in model.parameters() if p.requires_grad], lr=lr, momentum=0.9)
+    # optimizer = optim.Adam(model.parameters(),lr = lr)
+    optimizer = torch.optim.SGD([p for p in model.parameters() if p.requires_grad], lr=lr, momentum=0.9)
 
     best_perf = 0.0
     if int(sys.argv[1]) == 2:    
@@ -127,6 +127,8 @@ if __name__=="__main__":
             optimizer.zero_grad()
             loss =(-o*(a/10)).sum(dim=1).mean() # F.nll_loss(o,a)
             loss.backward()
+            for p in model.parameters():
+                print(torch.mean(torch.abs(p.grad.data)))
             optimizer.step()
             batch_loss += loss.data[0]
             acc = utils.batch_accuracy(o.data,a.data).cpu()
