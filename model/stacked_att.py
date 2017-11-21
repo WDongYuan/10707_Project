@@ -167,8 +167,8 @@ class Attention(nn.Module):
 
 		return vi_tilde
 	def linear_uniform_init(self,layer):
-		init.uniform(layer.weight,a=-0.01,b=0.01)
-		init.uniform(layer.bias,a=-0.01,b=0.01)
+		init.uniform(layer.weight.data,a=-0.01,b=0.01)
+		init.uniform(layer.bias.data,a=-0.01,b=0.01)
 
 class MyAttention(nn.Module):
 	def __init__(self,map_c,map_w,map_h,lstm_hidden_size):
