@@ -139,7 +139,7 @@ class Attention(nn.Module):
 		self.linear_q = nn.Linear(self.lstm_hidden_size,self.feature_size)
 		self.linear_uniform_init(self.linear_q)
 
-		self.linear_i = nn.Linear(self.out_c,self.feature_size,bias=False)
+		self.linear_i = nn.Linear(self.out_c,self.feature_size)
 		self.linear_uniform_init(self.linear_i)
 
 		self.tanh = nn.Tanh()
