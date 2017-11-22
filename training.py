@@ -21,14 +21,14 @@ from datetime import datetime
 import time
 import numpy as np
 
-def Validation(model,val,val_params,best_perf,i):
+def Validation(model,val,val_params):
     print("")
     val_accs = []
     model.eval()
     rate = 0.1
     for v,q,a,item,q_len in val:
-        if np.random.random()>rate:
-            continue
+        # if np.random.random()>rate:
+        #     continue
         q = Variable(q.cuda(async=True),**val_params)
         a = Variable(a.cuda(async=True),**val_params)
         v = Variable(v.cuda(async=True),**val_params)
@@ -37,25 +37,23 @@ def Validation(model,val,val_params,best_perf,i):
         acc = utils.batch_accuracy(o.data,a.data).cpu()
         val_accs.append(acc.view(-1))
     val_acc=torch.cat(val_accs,dim=0).mean()
-    # acc_record_file.write("validation: "+str(val_acc)+"\n")
-    if val_acc > best_perf:
-        print("Saving model...")
-        best_perf = val_acc
-        torch.save(model,"./my_best_model.model")
-        # save_model({'model': model.state_dict(),
-        #     'optimizer':optimizer.state_dict()},
-        #     "./my_best_model.model")
-    print("epoch %s, validation accuracy %s" %(str(i),str(val_acc)))
-    return best_perf
+    print("validation accuracy: "+ str(val_acc))
+
 def save_model(state, filename='saved_model.out'):
     torch.save(state, filename)
 
 if __name__=="__main__":
 
-    # acc_record_file = open("./acc_record_file","w+")
-    load_model = True if sys.argv[3]=="load" else False
-
     train = True
+    if sys.argv[1] == "validate":
+        train = False
+
+    # acc_record_file = open("./acc_record_file","w+")
+    load_model = True if not train or sys.argv[3]=="load" else False
+    load_path = None
+    if load_model:
+        load_path = sys.argv[4]
+
     cudnn.benchmark = True
     torch.backends.cudnn.enabled = True
     print("Loading data...")
@@ -72,25 +70,39 @@ if __name__=="__main__":
     #         config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,config.g_mlp_hidden_size,config.relation_length)
     #########################################################################
     model = None
-    if not load_model:
+    if train and not load_model:
         feature_size = 512
         model = stacked_att.StackAttNetwork(train_dict_size,config.word_embed_dim,config.output_features,
                 config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,feature_size,config.drop)
-    else:
+    elif train and load_model:
         print("Loading model...")
-        model = torch.load("./my_best_model.model")
+        model = torch.load(load_path)
+    elif not train and load_model:
+        print("Loading model...")
+        model = torch.load(load_path)
+        print("Begin validation")
+        val_params = {
+            'requires_grad': False,
+            'volatile': True
+        }
+        Validation(model,val,val_params)
     #########################################################################
     lr = float(sys.argv[2])
     optimizer = optim.Adam(model.parameters(),lr = lr)
     # optimizer = torch.optim.SGD([p for p in model.parameters() if p.requires_grad], lr=lr, momentum=0.9)
 
     best_perf = 0.0
-    if int(sys.argv[1]) == 2:    
-        os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
-        model = nn.parallel.DataParallel(model,[0,1]).cuda()
-    elif int(sys.argv[1]) == 1:
-        os.environ["CUDA_VISIBLE_DEVICES"] = "0"
-        model.cuda()
+    # if int(sys.argv[1]) == 2:    
+    #     os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
+    #     model = nn.parallel.DataParallel(model,[0,1]).cuda()
+    # elif int(sys.argv[1]) == 1:
+    #     os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+    #     model.cuda()
+
+    os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+    model.cuda()
+
+
     var_params = {
         'requires_grad': False,
 	    'volatile': False
