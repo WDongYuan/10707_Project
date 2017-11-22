@@ -109,9 +109,9 @@ if __name__=="__main__":
     ##Set learning rate for embedding layer
     param = []
     param_l = list(model.parameters())
-    param.append({'params': param_l[0], 'lr': 80.0})
+    param.append({'params': param_l[0], 'lr': 10.0})
     for i in range(1,len(param_l)):
-        param.append({'params': param_l[i]})
+        param.append({'params': param_l[i],'lr': lr})
     optimizer = optim.Adam(param,lr = lr)
     # optimizer = optim.Adam(model.parameters(),lr = lr)
     # optimizer = torch.optim.SGD([p for p in model.parameters() if p.requires_grad], lr=lr, momentum=0.9)
