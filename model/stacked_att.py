@@ -99,11 +99,14 @@ class StackAttNetwork(nn.Module):
 
 
 		##Attention
-		u = vq
+		u = self.dropout(vq)
 		vi_tilde = self.att1(img,u)
 		u = vi_tilde+u
+
+		u = self.dropout(u)
 		vi_tilde = self.att2(img,u)
 		u = vi_tilde+u
+		
 		# vi_tilde = self.att3(img,u)
 		# u = vi_tilde+u
 
@@ -153,12 +156,8 @@ class Attention(nn.Module):
 		self.batch_size,_ = vq.size()
 		# vi = vi.view(self.batch_size*self.img_space,self.out_c)
 
-		vi = self.dropout(vi)
-		vq = self.dropout(vq)
-
 		ha = self.tanh(self.linear_i(vi).view(self.batch_size,self.img_space,self.feature_size)+
 			self.linear_q(vq).unsqueeze(1).expand(self.batch_size,self.img_space,self.feature_size))
-
 		ha = self.dropout(ha)
 
 		ha = ha.view(-1,self.feature_size)
