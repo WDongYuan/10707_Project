@@ -41,4 +41,4 @@ rn_conv_channel = 512
 lstm_hidden_size = 800
 g_mlp_hidden_size = 256
 relation_length = 512
-drop = 0.0
+drop = 0.5

@@ -22,7 +22,6 @@ import time
 import numpy as np
 
 def Validation(model,val,val_params):
-    print("")
     val_accs = []
     model.eval()
     rate = 0.1
@@ -59,6 +58,7 @@ if __name__=="__main__":
     print("Loading data...")
     #########################################################################
     training,train_dict_size = data.get_loader(train=True,full_batch = False)
+    print("train_dict_size: "+str(train_dict_size))
     val,val_dict_size = data.get_loader(val=True,full_batch= False)
     #########################################################################
     # training,train_dict_size = data.get_loader(val=True,full_batch = False)
@@ -86,6 +86,7 @@ if __name__=="__main__":
             'volatile': True
         }
         Validation(model,val,val_params)
+        exit()
     #########################################################################
     lr = float(sys.argv[2])
     optimizer = optim.Adam(model.parameters(),lr = lr)
