@@ -45,6 +45,7 @@ if __name__=="__main__":
     if len(sys.argv)==1:
         print("python training.py train 0.001 not_load")
         print("python training.py validate 0.001 load my_best_model_15.model")
+        exit()
 
     train = True
     if sys.argv[1] == "validate":
