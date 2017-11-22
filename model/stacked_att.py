@@ -4,9 +4,11 @@ import torch.autograd as autograd
 import torch.nn as nn
 import torch.nn.functional as F
 import torch.optim as optim
-import torch.backends.cudnn as cudnn
 from torch.nn.init import kaiming_uniform
 import torch.nn.init as init
+########################################
+import torch.backends.cudnn as cudnn
+########################################
 
 class StackAttNetwork(nn.Module):
 	def __init__(self,voc_size,word_embedding_size,map_c,map_w,map_h,
@@ -106,7 +108,7 @@ class StackAttNetwork(nn.Module):
 		u = self.dropout(u)
 		vi_tilde = self.att2(img,u)
 		u = vi_tilde+u
-		
+
 		# vi_tilde = self.att3(img,u)
 		# u = vi_tilde+u
 
@@ -119,8 +121,8 @@ class StackAttNetwork(nn.Module):
 		ans_prob = self.log_softmax(self.linear_u(u))
 		return ans_prob
 
-	def init_hidden(self,param):
-		return autograd.Variable(torch.rand(self.lstm_layer*self.direction,self.batch_size,self.lstm_hidden_size).cuda(async=True),**param)
+	# def init_hidden(self,param):
+	# 	return autograd.Variable(torch.rand(self.lstm_layer*self.direction,self.batch_size,self.lstm_hidden_size).cuda(async=True),**param)
 
 	def _init_lstm(self, weight):
 		for w in weight.chunk(4, 0):

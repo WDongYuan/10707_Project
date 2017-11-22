@@ -1,12 +1,8 @@
-from model import baseline
-from model import relational_network_model
+# from model import baseline
+# from model import relational_network_model
 from model import stacked_att
 import sys
 sys.path.append('./util')
-import data
-import utils
-from tqdm import *
-import torch.backends.cudnn as cudnn
 from torch.autograd import Variable
 import torch.optim as optim
 import torch.optim.lr_scheduler as scheduler
@@ -20,6 +16,12 @@ import torch.nn as nn
 from datetime import datetime
 import time
 import numpy as np
+########################################
+import torch.backends.cudnn as cudnn
+import data
+import utils
+from tqdm import *
+########################################
 
 def Validation(model,val,val_params):
     val_accs = []
@@ -57,16 +59,22 @@ if __name__=="__main__":
     if load_model:
         load_path = sys.argv[4]
 
+    #########################################################################
     cudnn.benchmark = True
     torch.backends.cudnn.enabled = True
+    #########################################################################
     print("Loading data...")
     #########################################################################
-    training,train_dict_size = data.get_loader(train=True,full_batch = False)
-    print("train_dict_size: "+str(train_dict_size))
-    val,val_dict_size = data.get_loader(val=True,full_batch= False)
+    # training,train_dict_size = data.get_loader(train=True,full_batch = False)
+    # print("train_dict_size: "+str(train_dict_size))
+    # val,val_dict_size = data.get_loader(val=True,full_batch= False)
     #########################################################################
-    # training,train_dict_size = data.get_loader(val=True,full_batch = False)
-    # val,val_dict_size = training,train_dict_size
+    #########################################################################
+    # training,train_dict_size = None,17000
+    # val,val_dict_size = None,0
+    #########################################################################
+    training,train_dict_size = data.get_loader(val=True,full_batch = False)
+    val,val_dict_size = training,train_dict_size
     #########################################################################
     print("Finish loading data!")
     #########################################################################
@@ -78,6 +86,10 @@ if __name__=="__main__":
         feature_size = 512
         model = stacked_att.StackAttNetwork(train_dict_size,config.word_embed_dim,config.output_features,
                 config.output_size,config.output_size,config.max_answers,config.lstm_hidden_size,feature_size,config.drop)
+        # print(len(list(model.parameters())))
+        # print([p.size() for p in list(model.parameters())])
+        # print(model)
+        # exit()
     elif train and load_model:
         print("Loading model...")
         model = torch.load(load_path)
@@ -93,7 +105,15 @@ if __name__=="__main__":
         exit()
     #########################################################################
     lr = float(sys.argv[2])
-    optimizer = optim.Adam(model.parameters(),lr = lr)
+
+    ##Set learning rate for embedding layer
+    param = []
+    param_l = list(model.parameters())
+    param.append({'params': param_l[0], 'lr': 80.0})
+    for i in range(1,len(param_l)):
+        param.append({'params': param_l[i]})
+    optimizer = optim.Adam(param,lr = lr)
+    # optimizer = optim.Adam(model.parameters(),lr = lr)
     # optimizer = torch.optim.SGD([p for p in model.parameters() if p.requires_grad], lr=lr, momentum=0.9)
 
     best_perf = 0.0
