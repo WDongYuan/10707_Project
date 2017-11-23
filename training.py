@@ -164,7 +164,7 @@ if __name__=="__main__":
             optimizer.zero_grad()
             loss =(-o*(a/10)).sum(dim=1).mean() # F.nll_loss(o,a)
             loss.backward()
-            torch.nn.utils.clip_grad_norm(model.parameters(),0.1)
+            torch.nn.utils.clip_grad_norm(model.parameters(),1)
             # for p in model.parameters():
             #     print(torch.mean(torch.abs(p.grad.data)))
             optimizer.step()
