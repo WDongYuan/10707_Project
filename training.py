@@ -65,16 +65,16 @@ if __name__=="__main__":
     #########################################################################
     print("Loading data...")
     #########################################################################
-    # training,train_dict_size = data.get_loader(train=True,full_batch = False)
+    training,train_dict_size = data.get_loader(train=True,full_batch = False)
+    val,val_dict_size = data.get_loader(val=True,full_batch= False)
     # print("train_dict_size: "+str(train_dict_size))
-    # val,val_dict_size = data.get_loader(val=True,full_batch= False)
     #########################################################################
     #########################################################################
     # training,train_dict_size = None,17000
     # val,val_dict_size = None,0
     #########################################################################
-    training,train_dict_size = data.get_loader(val=True,full_batch = False)
-    val,val_dict_size = training,train_dict_size
+    # training,train_dict_size = data.get_loader(val=True,full_batch = False)
+    # val,val_dict_size = training,train_dict_size
     #########################################################################
     print("Finish loading data!")
     #########################################################################
