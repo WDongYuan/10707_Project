@@ -186,7 +186,8 @@ if __name__=="__main__":
         print("")
         print("epoch %s, loss %s, accuracy %s" %(str(i),str(batch_loss/config.batch_size),str(train_acc)))
         # acc_record_file.write("train: "+str(batch_loss/config.batch_size)+" "+str(train_acc)+"\n")
-        if (i+1)%5 ==0:
+        if (i+1)%1 ==0:
+            print("Saving model...")
             torch.save(model,"./my_best_model_"+str(i+1)+".model")
         #     best_perf = Validation(model,val,val_params,best_perf,i)
     acc_record_file.close()
