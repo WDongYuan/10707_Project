@@ -112,7 +112,7 @@ if __name__=="__main__":
     param.append({'params': param_l[0], 'lr': lr})
     for i in range(1,len(param_l)):
         param.append({'params': param_l[i],'lr': lr})
-    optimizer = optim.Adam(param,lr = lr)
+    optimizer = optim.Adam(param,lr = lr,weight_decay=0,0.0005)
     # optimizer = optim.Adam(model.parameters(),lr = lr)
     # optimizer = torch.optim.SGD([p for p in model.parameters() if p.requires_grad], lr=lr, momentum=0.9)
 
@@ -164,6 +164,7 @@ if __name__=="__main__":
             optimizer.zero_grad()
             loss =(-o*(a/10)).sum(dim=1).mean() # F.nll_loss(o,a)
             loss.backward()
+            torch.nn.utils.clip_grad_norm(model.parameters(),0.1)
             # for p in model.parameters():
             #     print(torch.mean(torch.abs(p.grad.data)))
             optimizer.step()

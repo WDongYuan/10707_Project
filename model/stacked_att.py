@@ -7,7 +7,7 @@ import torch.optim as optim
 from torch.nn.init import kaiming_uniform
 import torch.nn.init as init
 ########################################
-import torch.backends.cudnn as cudnn
+# import torch.backends.cudnn as cudnn
 ########################################
 
 class StackAttNetwork(nn.Module):
