@@ -1,6 +1,6 @@
 from model import baseline
 from model import relational_network_model
-from model import hier_san
+from model import hier_glimpse
 import sys
 sys.path.append('./util')
 import data
@@ -25,7 +25,7 @@ if __name__=="__main__":
     training,train_dict_size = data.get_loader(train=True,full_batch = False)
     val,val_dict_size = data.get_loader(val=True,full_batch= False)
 
-    model = hier_san.hier_san(config.stack_size,
+    model = hier_glimpse.hier_glimpse(config.glimpse_size,
                                 train_dict_size,
                                 config.max_answers,
                                 config.word_embed_dim,
