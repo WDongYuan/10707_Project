@@ -81,6 +81,10 @@ if __name__=="__main__":
         train_accs = []
         print(datetime.now())
         model.train()
+
+        sample_counter = 0
+        tmp_acc = []
+
         for v,q,a,item,q_len in training:
             q = Variable(q.cuda(async=True),**var_params)
             a = Variable(a.cuda(async=True),**var_params)
@@ -94,6 +98,19 @@ if __name__=="__main__":
             batch_loss += loss.data[0]
             acc = utils.batch_accuracy(o.data,a.data).cpu()
             train_accs.append(acc.view(-1))
+
+            tmp_acc.append(acc.view(-1))
+            sample_counter += config.batch_size
+            if sample_counter%5000==0:
+                print((round(torch.cat(tmp_acc,dim=0).mean(),4),round(loss.data[0],4))),
+                # print("."),
+                tmp_acc = []
+            if sample_counter%100000==0:
+                print("")
+                print(str(sample_counter)+" samples.")
+                print("Time: "+str(time.time()-start_time))
+                print("############################################")
+                
         train_acc= torch.cat(train_accs,dim=0).mean()
         print("epoch %s, loss %s, accuracy %s" %(str(i),str(batch_loss/config.batch_size),str(train_acc)))
         torch.save(model,"./curr_model.model")
