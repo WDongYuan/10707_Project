@@ -22,8 +22,14 @@ if __name__=="__main__":
     train = True
     cudnn.benchmark = True
     torch.backends.cudnn.enabled = True
-    training,train_dict_size = data.get_loader(train=True,full_batch = False)
-    val,val_dict_size = data.get_loader(val=True,full_batch= False)
+
+    #########################################################################
+    # training,train_dict_size = data.get_loader(train=True,full_batch = False)
+    # val,val_dict_size = data.get_loader(val=True,full_batch= False)
+    #########################################################################
+    training,train_dict_size = data.get_loader(val=True,full_batch = False)
+    val,val_dict_size = training,train_dict_size
+    #########################################################################
 
     model = hier_glimpse.hier_glimpse(config.glimpse_size,
                                 train_dict_size,
