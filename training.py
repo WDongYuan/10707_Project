@@ -23,6 +23,7 @@ if __name__=="__main__":
     cudnn.benchmark = True
     torch.backends.cudnn.enabled = True
 
+    print("reading data...")
     #########################################################################
     # training,train_dict_size = data.get_loader(train=True,full_batch = False)
     # val,val_dict_size = data.get_loader(val=True,full_batch= False)
@@ -30,6 +31,7 @@ if __name__=="__main__":
     training,train_dict_size = data.get_loader(val=True,full_batch = False)
     val,val_dict_size = training,train_dict_size
     #########################################################################
+    print("finish reading data!")
 
     model = hier_glimpse.hier_glimpse(config.glimpse_size,
                                 train_dict_size,
@@ -110,7 +112,7 @@ if __name__=="__main__":
                 print(str(sample_counter)+" samples.")
                 print("Time: "+str(time.time()-start_time))
                 print("############################################")
-                
+
         train_acc= torch.cat(train_accs,dim=0).mean()
         print("epoch %s, loss %s, accuracy %s" %(str(i),str(batch_loss/config.batch_size),str(train_acc)))
         torch.save(model,"./curr_model.model")

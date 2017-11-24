@@ -36,7 +36,7 @@ class hier_glimpse(nn.Module):
         q_att = None
         v_att = None
         for i in range(self.glimpse_size):
-            a_v,a_q = self.att1(q,v,param)
+            a_v,a_q = self.att[i](q,v,param)
             q_i = torch.bmm(q.transpose(1,2),a_q).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
             v_i = torch.bmm(v,a_v).squeeze()
             if q_att is None:
