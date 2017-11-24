@@ -117,6 +117,8 @@ class Attention(nn.Module):
         out_i = Variable((torch.ones(batch_size,self.img_size,1).float()/self.img_size).cuda(async=True),**param) # (b,s,1)
         # v = self.drop(v)
         # q = self.drop(q)
+        print(self.affi(q.view(-1,self.lstm_hidden_size)).view(-1,seq_size,self.channel_size).size())
+        print(v.size())
         c = F.tanh(torch.bmm(self.affi(q.view(-1,self.lstm_hidden_size)).view(-1,seq_size,self.channel_size),v)) # (b, l, h) dot (h,c) dot (b,c,s) -> (b, l, s)
         out_i = v.transpose(1,2)
         out_i = self.linear_i(out_i.view(-1,self.channel_size)).view(-1,self.img_size,self.feat_hidden_size).permute(0,2,1)
