@@ -109,7 +109,7 @@ if __name__=="__main__":
     ##Set learning rate for embedding layer
     param = []
     param_l = list(model.parameters())
-    param.append({'params': param_l[0], 'lr': lr})
+    param.append({'params': param_l[0], 'lr': 1})
     for i in range(1,len(param_l)):
         param.append({'params': param_l[i],'lr': lr})
     optimizer = optim.Adam(param,lr = lr,weight_decay=0.0005)
@@ -136,7 +136,7 @@ if __name__=="__main__":
         'requires_grad': False,
         'volatile': True
     }
-    lr_scheduler = scheduler.StepLR(optimizer, step_size = config.decay_step, gamma = config.decay_size)
+    # lr_scheduler = scheduler.StepLR(optimizer, step_size = config.decay_step, gamma = config.decay_size)
 
     print("data is fully loaded")
     print("lr"+str(lr))
@@ -147,7 +147,7 @@ if __name__=="__main__":
     # exit()
 
     for i in tqdm(range(config.epochs)):
-        lr_scheduler.step()
+        # lr_scheduler.step()
         batch_loss = 0
         train_accs = []
         print(datetime.now())
