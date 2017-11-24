@@ -109,7 +109,7 @@ if __name__=="__main__":
     ##Set learning rate for embedding layer
     param = []
     param_l = list(model.parameters())
-    param.append({'params': param_l[0], 'lr': 1})
+    param.append({'params': param_l[0], 'lr': lr*10})
     for i in range(1,len(param_l)):
         param.append({'params': param_l[i],'lr': lr})
     optimizer = optim.Adam(param,lr = lr,weight_decay=0.00005)
