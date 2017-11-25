@@ -8,7 +8,8 @@ import torch.nn.init as init
 class hier_glimpse(nn.Module):
     def __init__(self,glimpse_size,vocab_size,ans_size,embed_size,lstm_hidden_size,channel_size,loc_size,feat_hidden_size,out_hidden_size,drop_out):
         super(hier_glimpse,self).__init__()
-        self.glimpse_size = glimpse_size
+        # self.glimpse_size = glimpse_size
+        self.glimpse_size = 1
         self.classifier = nn.Sequential(
                                 nn.Linear(lstm_hidden_size*self.glimpse_size + channel_size*self.glimpse_size,out_hidden_size),
                                 nn.ReLU(),
