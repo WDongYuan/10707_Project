@@ -20,6 +20,8 @@ class hier_glimpse(nn.Module):
         self.att = []
         for i in range(self.glimpse_size):
             self.att.append(Attention(lstm_hidden_size,channel_size,loc_size,feat_hidden_size,drop_out))
+        self.attention = Attention(lstm_hidden_size,channel_size,loc_size,feat_hidden_size,drop_out)
+
         self.img_size = loc_size * loc_size
         self.channel_size = channel_size
         for m in self.modules():
@@ -33,25 +35,30 @@ class hier_glimpse(nn.Module):
         v = v.view(-1,self.channel_size,self.img_size) # (b, c, s)
         q = self.text(q,q_length,param)
 
-        q_att = None
-        v_att = None
-        for i in range(self.glimpse_size):
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            print(i)
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-            a_v,a_q = self.att[i](q,v,param)
-            q_i = torch.bmm(q.transpose(1,2),a_q).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
-            v_i = torch.bmm(v,a_v).squeeze()
-            if q_att is None:
-                q_att = q_i
-                v_att = v_i
-            else:
-                q_att = torch.cat([q_att,q_i])
-                v_att = torch.cat([v_att,v_i])
+        # q_att = None
+        # v_att = None
+        # for i in range(self.glimpse_size):
+        #     print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        #     print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        #     print(i)
+        #     print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        #     print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+        #     a_v,a_q = self.att[i](q,v,param)
+        #     q_i = torch.bmm(q.transpose(1,2),a_q).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
+        #     v_i = torch.bmm(v,a_v).squeeze()
+        #     if q_att is None:
+        #         q_att = q_i
+        #         v_att = v_i
+        #     else:
+        #         q_att = torch.cat([q_att,q_i])
+        #         v_att = torch.cat([v_att,v_i])
 
-        out = self.classifier(torch.cat([q_att,v_att],1))
+        # out = self.classifier(torch.cat([q_att,v_att],1))
+
+        a_v,a_q = self.attention(q,v,param)
+        q = torch.bmm(q.transpose(1,2),a_q).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
+        v = torch.bmm(v,a_v).squeeze()
+        out = self.classifier(torch.cat([q,v],1))
 
         return out
 
@@ -117,12 +124,12 @@ class Attention(nn.Module):
         out_i = Variable((torch.ones(batch_size,self.img_size,1).float()/self.img_size).cuda(async=True),**param) # (b,s,1)
         # v = self.drop(v)
         # q = self.drop(q)
-        print(self.lstm_hidden_size)
-        print(self.channel_size)
-        print(seq_size)
-        print(q.size())
-        print(q)
-        print(self.affi(q.view(-1,self.lstm_hidden_size)).size())
+        # print(self.lstm_hidden_size)
+        # print(self.channel_size)
+        # print(seq_size)
+        # print(q.size())
+        # print(q)
+        # print(self.affi(q.view(-1,self.lstm_hidden_size)).size())
         # print(v.size())
         c = F.tanh(torch.bmm(self.affi(q.view(-1,self.lstm_hidden_size)).view(-1,seq_size,self.channel_size),v)) # (b, l, h) dot (h,c) dot (b,c,s) -> (b, l, s)
         out_i = v.transpose(1,2)
