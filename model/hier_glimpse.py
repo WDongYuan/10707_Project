@@ -133,7 +133,7 @@ class Attention(nn.Module):
         # print(v.size())
         c = F.tanh(torch.bmm(self.affi(q.view(-1,self.lstm_hidden_size)).view(-1,seq_size,self.channel_size),v)) # (b, l, h) dot (h,c) dot (b,c,s) -> (b, l, s)
         out_i = v.transpose(1,2)
-        out_i = self.linear_i(out_i.view(-1,self.channel_size)).view(-1,self.img_size,self.feat_hidden_size).permute(0,2,1)
+        out_i = self.linear_i(out_i.view(-1,self.channel_size)).contiguous().view(-1,self.img_size,self.feat_hidden_size).permute(0,2,1)
         # out_i = self.linear_i(out_i.view(-1,self.channel_size)).view(-1,self.feat_hidden_size,self.img_size) # (b, c, s) * (b, c, s) and (b, c, s) dot (k, c) -> (b,k,s)
         out_q = q
         out_q = self.linear_q(out_q.view(-1,self.lstm_hidden_size)).view(-1,seq_size,self.feat_hidden_size).permute(0,2,1) # (b, h, l) * (b, h, l) and (b, h, l) dot (k, h ) -> (b,k,l)
