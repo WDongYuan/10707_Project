@@ -111,9 +111,17 @@ class Attention(nn.Module):
         ##TODO change the bmm to linear
         self.affi = nn.Linear(lstm_hidden_size,channel_size,bias=False)
         self.linear_i = nn.Linear(channel_size,feat_hidden_size,bias=False)
+        self.linear_uniform_init(self.linear_i)
+
         self.linear_q = nn.Linear(lstm_hidden_size,feat_hidden_size,bias=False)
+        self.linear_uniform_init(self.linear_q)
+
         self.att_i = nn.Linear(feat_hidden_size,1,bias=False)
+        self.linear_uniform_init(self.att_i)
+
         self.att_q = nn.Linear(feat_hidden_size,1,bias=False)
+        self.linear_uniform_init(self.att_q)
+
         self.feat_hidden_size = feat_hidden_size
         self.lstm_hidden_size = lstm_hidden_size
         self.img_size = loc_size * loc_size
@@ -147,6 +155,13 @@ class Attention(nn.Module):
         out_q = F.softmax(self.att_q(out_q.transpose(1,2)).squeeze()).unsqueeze(2) # (b, l)
         out_i = F.softmax(self.att_i(out_i.transpose(1,2)).squeeze()).unsqueeze(2) # (b, s)
         return out_i,out_q
+
+    def linear_uniform_init(self,layer):
+        init.xavier_uniform(layer.weight.data)
+        if layer.bias is not None:
+            init.xavier_uniform(layer.bias.data)
+        # init.uniform(layer.weight.data,a=-0.01,b=0.01)
+        # init.uniform(layer.bias.data,a=-0.01,b=0.01)
 
 '''
 class Attention(nn.Module):
