@@ -19,6 +19,23 @@ import torch.nn as nn
 from datetime import datetime
 import time
 
+def Validation(model,val,val_params):
+    val_accs = []
+    model.eval()
+    rate = 0.1
+    for v,q,a,item,q_len in val:
+        # if np.random.random()>rate:
+        #     continue
+        q = Variable(q.cuda(async=True),**val_params)
+        a = Variable(a.cuda(async=True),**val_params)
+        v = Variable(v.cuda(async=True),**val_params)
+        q_len = Variable(q_len.cuda(async=True), **val_params)
+        o = model(q,v,q_len,val_params)
+        acc = utils.batch_accuracy(o.data,a.data).cpu()
+        val_accs.append(acc.view(-1))
+    val_acc=torch.cat(val_accs,dim=0).mean()
+    print("validation accuracy: "+ str(val_acc))
+
 if __name__=="__main__":
     train = True
     cudnn.benchmark = True
@@ -53,6 +70,16 @@ if __name__=="__main__":
     elif int(sys.argv[1]) == 1:
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
         model.cuda()
+    elif int(sys.argv[1]) == 3:
+        model = torch.load("model_8.model")
+        print("Begin validation")
+        val_params = {
+            'requires_grad': False,
+            'volatile': True
+        }
+        Validation(model,val,val_params)
+        exit()
+
     lr = float(sys.argv[2])
     #embed_params = list(map(id, model.text.embed.parameters()))
     #base_params = filter(lambda p: id(p) not in embed_params,model.parameters())
