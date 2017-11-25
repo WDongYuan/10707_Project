@@ -17,6 +17,7 @@ import os
 import config
 import torch.nn as nn
 from datetime import datetime
+import time
 
 if __name__=="__main__":
     train = True
@@ -86,6 +87,7 @@ if __name__=="__main__":
 
         sample_counter = 0
         tmp_acc = []
+        start_time = time.time()
 
         for v,q,a,item,q_len in training:
             q = Variable(q.cuda(async=True),**var_params)
@@ -133,7 +135,9 @@ if __name__=="__main__":
             print("epoch %s, validation accuracy %s" %(str(i),str(val_acc)))
             if val_acc > best_perf:
                 best_perf = val_acc
-                torch.save(model,"./best_model.model")
+                torch.save(model,"./best_model"+str(i)+".model")
+        print("saving model...")
+        torch.save(model,"./model_"+str(i)+".model")
     print("best performance %s" %str(best_perf))
         
     
