@@ -121,6 +121,7 @@ class Attention(nn.Module):
         print(self.channel_size)
         print(seq_size)
         print(q.size())
+        print(q)
         print(self.affi(q.view(-1,self.lstm_hidden_size)).size())
         # print(v.size())
         c = F.tanh(torch.bmm(self.affi(q.view(-1,self.lstm_hidden_size)).view(-1,seq_size,self.channel_size),v)) # (b, l, h) dot (h,c) dot (b,c,s) -> (b, l, s)
