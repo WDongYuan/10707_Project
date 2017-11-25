@@ -8,8 +8,7 @@ import torch.nn.init as init
 class hier_glimpse(nn.Module):
     def __init__(self,glimpse_size,vocab_size,ans_size,embed_size,lstm_hidden_size,channel_size,loc_size,feat_hidden_size,out_hidden_size,drop_out):
         super(hier_glimpse,self).__init__()
-        # self.glimpse_size = glimpse_size
-        self.glimpse_size = 1
+        self.glimpse_size = glimpse_size
         self.classifier = nn.Sequential(
                                 nn.Linear(lstm_hidden_size*self.glimpse_size + channel_size*self.glimpse_size,out_hidden_size),
                                 nn.ReLU(),
@@ -18,11 +17,15 @@ class hier_glimpse(nn.Module):
                                 nn.LogSoftmax()
                                 )
         self.text = TextNN(vocab_size,ans_size,embed_size,lstm_hidden_size,drop_out)
-        self.att = []
-        for i in range(self.glimpse_size):
-            attention = Attention(lstm_hidden_size,channel_size,loc_size,feat_hidden_size,drop_out)
-            self.att.append(attention)
-        self.attention = Attention(lstm_hidden_size,channel_size,loc_size,feat_hidden_size,drop_out)
+        # self.att = []
+        # for i in range(self.glimpse_size):
+        #     attention = Attention(lstm_hidden_size,channel_size,loc_size,feat_hidden_size,drop_out)
+        #     self.att.append(attention)
+        # self.attention = Attention(lstm_hidden_size,channel_size,loc_size,feat_hidden_size,drop_out)
+
+        self.att1 = Attention(lstm_hidden_size,channel_size,loc_size,feat_hidden_size,drop_out)
+        if self.glimpse_size==2:
+            self.att2 = Attention(lstm_hidden_size,channel_size,loc_size,feat_hidden_size,drop_out)
 
         self.img_size = loc_size * loc_size
         self.channel_size = channel_size
@@ -39,16 +42,19 @@ class hier_glimpse(nn.Module):
 
         q_att = None
         v_att = None
-        for attention in self.att:
-            a_v,a_q = attention(q,v,param)
-            q_i = torch.bmm(q.transpose(1,2),a_q).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
-            v_i = torch.bmm(v,a_v).squeeze()
-            if q_att is None:
-                q_att = q_i
-                v_att = v_i
-            else:
-                q_att = torch.cat([q_att,q_i])
-                v_att = torch.cat([v_att,v_i])
+
+        a_v1,a_q1 = self.att1(q,v,param)
+        q1 = torch.bmm(q.transpose(1,2),a_q1).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
+        v1 = torch.bmm(v,a_v1).squeeze()
+        q_att = q1
+        v_att = v1
+
+        if self.glimpse_size==2:
+            a_v2,a_q2 = self.att2(q,v,param)
+            q2 = torch.bmm(q.transpose(1,2),a_q2).squeeze() # (b, h, len) * (b, len, 1) -> (b, h, 1)
+            v2 = torch.bmm(v,a_v2).squeeze()
+            q_att = torch.cat([q_att,q2],1)
+            v_att = torch.cat([v_att,v2],1)
 
         out = self.classifier(torch.cat([q_att,v_att],1))
 
