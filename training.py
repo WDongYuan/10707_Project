@@ -71,7 +71,8 @@ if __name__=="__main__":
         os.environ["CUDA_VISIBLE_DEVICES"] = "0"
         model.cuda()
     elif int(sys.argv[1]) == 3:
-        model = torch.load("model_8.model")
+        path = sys.argv[2]
+        model = torch.load(path)
         print("Begin validation")
         val_params = {
             'requires_grad': False,
