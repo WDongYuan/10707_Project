@@ -79,6 +79,9 @@ if __name__=="__main__":
         }
         Validation(model,val,val_params)
         exit()
+    elif int(sys.argv[1]) == 4:
+        model = torch.load("model_8.model")
+        model.cuda()
 
     lr = float(sys.argv[2])
     #embed_params = list(map(id, model.text.embed.parameters()))
