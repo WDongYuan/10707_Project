@@ -1,6 +1,7 @@
 from model import baseline
 from model import relational_network_model
 from model import hier_glimpse
+from vqa_model import *
 import sys
 sys.path.append('./util')
 import data
@@ -51,18 +52,19 @@ if __name__=="__main__":
     #########################################################################
     print("finish reading data!")
 
-    model = hier_glimpse.hier_glimpse(config.glimpse_size,
-                                train_dict_size,
-                                config.max_answers,
-                                config.word_embed_dim,
-                                config.lstm_hidden_size,
-                                config.lstm_direction,
-                                config.image_embed_dim,
-                                config.output_size,
-                                config.feat_hidden_size,
-                                config.out_hidden_size,
-                                config.drop_out
-                                )
+    # model = hier_glimpse.hier_glimpse(config.glimpse_size,
+    #                             train_dict_size,
+    #                             config.max_answers,
+    #                             config.word_embed_dim,
+    #                             config.lstm_hidden_size,
+    #                             config.lstm_direction,
+    #                             config.image_embed_dim,
+    #                             config.output_size,
+    #                             config.feat_hidden_size,
+    #                             config.out_hidden_size,
+    #                             config.drop_out
+    #                             )
+    model = Net(train_dict_size)
     if len(sys.argv) == 4:
         model = torch.load(sys.argv[3])
     if int(sys.argv[1]) == 2:    
@@ -128,7 +130,7 @@ if __name__=="__main__":
             a = Variable(a.cuda(async=True),**var_params)
             v = Variable(v.cuda(async=True),**var_params)
             q_len = Variable(q_len, **var_params)
-            o = model(q,v,q_len,var_params)
+            o = model(v,q,q_len)
             optimizer.zero_grad()
             # print(o.size())
             # print(a.size())
