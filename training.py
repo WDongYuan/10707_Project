@@ -86,7 +86,7 @@ if __name__=="__main__":
     elif int(sys.argv[1]) == 4:
         path = sys.argv[3]
         print("loading model...")
-        model = torch.load("model_8.model")
+        model = torch.load(path)
         model.cuda()
 
     lr = float(sys.argv[2])
@@ -164,7 +164,7 @@ if __name__=="__main__":
                 a = Variable(a.cuda(async=True),**val_params)
                 v = Variable(v.cuda(async=True),**val_params)
                 q_len = Variable(q_len, **val_params)
-                o = model(q,v,q_len,val_params)
+                o = model(v,q,q_len)
                 acc = utils.batch_accuracy(o.data,a.data).cpu()
                 val_accs.append(acc.view(-1))
             val_acc=torch.cat(val_accs,dim=0).mean()
