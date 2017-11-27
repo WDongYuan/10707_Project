@@ -143,11 +143,11 @@ if __name__=="__main__":
 
             tmp_acc.append(acc.view(-1))
             sample_counter += config.batch_size
-            if sample_counter%5000==0:
+            if sample_counter/5000-(sample_counter-config.batch_size)/5000==1:
                 print((round(torch.cat(tmp_acc,dim=0).mean(),4),round(loss.data[0],4))),
                 # print("."),
                 tmp_acc = []
-            if sample_counter%100000==0:
+            if sample_counter/100000-(sample_counter-config.batch_size)/100000==1:
                 print("")
                 print(str(sample_counter)+" samples.")
                 print("Time: "+str(time.time()-start_time))
