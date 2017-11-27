@@ -1,7 +1,7 @@
 from model import baseline
 from model import relational_network_model
 from model import hier_glimpse
-from vqa_model import *
+from model import vqa_model
 import sys
 sys.path.append('./util')
 import data
@@ -64,7 +64,7 @@ if __name__=="__main__":
     #                             config.out_hidden_size,
     #                             config.drop_out
     #                             )
-    model = Net(train_dict_size)
+    model = vqa_model.Net(train_dict_size)
     if len(sys.argv) == 4:
         model = torch.load(sys.argv[3])
     if int(sys.argv[1]) == 2:    
