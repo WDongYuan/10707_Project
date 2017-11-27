@@ -37,5 +37,6 @@ glimpse_size = 2
 feat_hidden_size = 512
 max_length = 23
 lstm_hidden_size = 512
+lstm_direction = 2
 out_hidden_size = 1024
 drop_out = 0.5

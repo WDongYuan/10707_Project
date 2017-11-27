@@ -6,26 +6,26 @@ import torch.autograd as autograd
 import torch.nn.init as init
 
 class hier_glimpse(nn.Module):
-    def __init__(self,glimpse_size,vocab_size,ans_size,embed_size,lstm_hidden_size,channel_size,loc_size,feat_hidden_size,out_hidden_size,drop_out):
+    def __init__(self,glimpse_size,vocab_size,ans_size,embed_size,lstm_hidden_size,lstm_direction,channel_size,loc_size,feat_hidden_size,out_hidden_size,drop_out):
         super(hier_glimpse,self).__init__()
         self.glimpse_size = glimpse_size
         self.classifier = nn.Sequential(
-                                nn.Linear(lstm_hidden_size*self.glimpse_size + channel_size*self.glimpse_size,out_hidden_size),
+                                nn.Linear(lstm_hidden_size*lstm_direction*self.glimpse_size + channel_size*self.glimpse_size,out_hidden_size),
                                 nn.ReLU(),
                                 nn.Dropout(drop_out),
                                 nn.Linear(out_hidden_size,ans_size),
-                                nn.LogSoftmax()
+                                nn.Softmax()
                                 )
-        self.text = TextNN(vocab_size,ans_size,embed_size,lstm_hidden_size,drop_out)
+        self.text = TextNN(vocab_size,ans_size,embed_size,lstm_hidden_size,drop_out,lstm_direction)
         # self.att = []
         # for i in range(self.glimpse_size):
         #     attention = Attention(lstm_hidden_size,channel_size,loc_size,feat_hidden_size,drop_out)
         #     self.att.append(attention)
         # self.attention = Attention(lstm_hidden_size,channel_size,loc_size,feat_hidden_size,drop_out)
 
-        self.att1 = Attention(lstm_hidden_size,channel_size,loc_size,feat_hidden_size,drop_out)
+        self.att1 = Attention(lstm_hidden_size*lstm_direction,channel_size,loc_size,feat_hidden_size,drop_out)
         if self.glimpse_size==2:
-            self.att2 = Attention(lstm_hidden_size,channel_size,loc_size,feat_hidden_size,drop_out)
+            self.att2 = Attention(lstm_hidden_size*lstm_direction,channel_size,loc_size,feat_hidden_size,drop_out)
 
         self.img_size = loc_size * loc_size
         self.channel_size = channel_size
@@ -66,14 +66,14 @@ class hier_glimpse(nn.Module):
         return out
 
 class TextNN(nn.Module):
-    def __init__(self,vocab_size,ans_size,embed_size,lstm_hidden_size,drop_out):
+    def __init__(self,vocab_size,ans_size,embed_size,lstm_hidden_size,drop_out,lstm_direction):
         super(TextNN,self).__init__()
         self.embed = nn.Embedding(vocab_size, embed_size,padding_idx=0)
         self.embed_size = embed_size
         self.lstm_hidden_size = lstm_hidden_size
         self.lstm_layer = 1
-        self.bidirectional_flag = False
-        self.direction = 2 if self.bidirectional_flag else 1
+        self.bidirectional_flag = False if lstm_direction==1 else True
+        self.direction = lstm_direction
         self.question_lstm = nn.LSTM(embed_size, lstm_hidden_size,
                                     num_layers=self.lstm_layer,bidirectional=self.bidirectional_flag,batch_first=True)
         self.drop = nn.Dropout(drop_out)

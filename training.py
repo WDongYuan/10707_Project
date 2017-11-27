@@ -56,6 +56,7 @@ if __name__=="__main__":
                                 config.max_answers,
                                 config.word_embed_dim,
                                 config.lstm_hidden_size,
+                                config.lstm_direction,
                                 config.image_embed_dim,
                                 config.output_size,
                                 config.feat_hidden_size,
