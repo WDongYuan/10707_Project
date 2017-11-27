@@ -14,7 +14,7 @@ class hier_glimpse(nn.Module):
                                 nn.ReLU(),
                                 nn.Dropout(drop_out),
                                 nn.Linear(out_hidden_size,ans_size),
-                                nn.Softmax()
+                                nn.LogSoftmax()
                                 )
         self.text = TextNN(vocab_size,ans_size,embed_size,lstm_hidden_size,drop_out,lstm_direction)
         # self.att = []
