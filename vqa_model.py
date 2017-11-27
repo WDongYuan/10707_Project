@@ -4,8 +4,7 @@ import torch.nn.functional as F
 import torch.nn.init as init
 from torch.nn.utils.rnn import pack_padded_sequence
 
-import my_config as config
-
+import my_config
 
 class Net(nn.Module):
     """ Re-implementation of ``Show, Ask, Attend, and Answer: A Strong Baseline For Visual Question Answering'' [0]
@@ -16,7 +15,7 @@ class Net(nn.Module):
     def __init__(self, embedding_tokens):
         super(Net, self).__init__()
         question_features = 1024
-        vision_features = config.output_features
+        vision_features = my_config.output_features
         glimpses = 2
 
         self.text = TextProcessor(
@@ -35,7 +34,7 @@ class Net(nn.Module):
         self.classifier = Classifier(
             in_features=glimpses * vision_features + question_features,
             mid_features=1024,
-            out_features=config.max_answers,
+            out_features=my_config.max_answers,
             drop=0.5,
         )
 
