@@ -82,6 +82,7 @@ if __name__=="__main__":
         Validation(model,val,val_params)
         exit()
     elif int(sys.argv[1]) == 4:
+        path = sys.argv[3]
         print("loading model...")
         model = torch.load("model_8.model")
         model.cuda()
